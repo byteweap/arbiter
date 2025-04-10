@@ -55,16 +55,16 @@ func main() {
 
     err := arbiter.ValidateStruct(person, "Person 不能为空",
         rule.Field(&person.Name,
-            rule.Length(2, 50),
-            rule.String().Errf("姓名不能为空"),
+            rule.Length[string](2, 50).Errf("姓名长度必须在2-50之间"),
+            rule.Required[string]().Errf("姓名不能为空"),
         ),
         rule.Field(&person.Age,
             rule.Min(0),
             rule.Max(120),
         ),
         rule.Field(&person.Email,
-            rule.Email(),
-            rule.String().Errf("邮箱格式不正确"),
+            rule.Required[string]().Errf("邮箱格式不正确")
+            rule.IsEmail().Errf("邮箱格式错误"),
         ),
     )
 
@@ -83,14 +83,14 @@ func main() {
 ```go
 // Validate 对单个值应用多个规则
 err := Validate("hello",
-    rule.Length(3, 10),
-    rule.String().Errf("字符串格式不正确"),
+    rule.Length[string](3, 10).Errf("字符串格式不正确"),
+    // ...
 )
 
 // ValidateWithErrs 收集所有验证错误
 err := ValidateWithErrs("hello",
-    rule.Length(3, 10),
-    rule.String().Errf("字符串格式不正确"),
+    rule.Required[string]().Errf("不能为空")
+    rule.Length(3, 10).Errf("格式不正确"),
 )
 
 // ValidateStruct 验证结构体及其字段
@@ -117,15 +117,16 @@ nameRule := rule.Field(&person.Name,
 #### 字符串规则
 - `StartWith`: 验证字符串前缀
 - `EndWith`: 验证字符串后缀
-- `ChineseOnly`: 验证中文字符
-- `FullWidthOnly`: 验证全角字符
-- `HalfWidthOnly`: 验证半角字符
-- `UpperCaseOnly`: 验证大写字母
-- `LowerCaseOnly`: 验证小写字母
+- `OnlyChinese`: 验证中文字符
+- `OnlyFullWidth`: 验证全角字符
+- `OnlyHalfWidth`: 验证半角字符
+- `OnlyUpperCase`: 验证大写字母
+- `OnlyLowerCase`: 验证小写字母
 - `SpecialChars`: 验证特殊字符
 - `Contains`: 验证子串存在
 - `NotContains`: 验证子串不存在
-
+- ...
+  
 #### 数字规则
 - `Min`: 最小值
 - `Max`: 最大值
@@ -135,21 +136,30 @@ nameRule := rule.Field(&person.Name,
 - `Even`: 偶数验证
 - `Odd`: 奇数验证
 - `Precision`: 小数精度验证
+- ...
 
 #### 时间规则
 - `Before`: 早于指定时间
 - `After`: 晚于指定时间
 - `Between`: 时间范围验证
+- ...
 
 #### 文件规则
-- `Exists`: 文件存在验证
 - `Size`: 文件大小验证
 - `Extension`: 文件扩展名验证
+- ...
 
 #### 网络规则
 - `IP`: IP 地址验证
 - `URL`: URL 验证
 - `Email`: 邮箱验证
+- ...
+
+#### 正则表达式 (采用预编译提高性能)
+- `IsEmail`: 邮箱验证
+- `IsPhone`: 手机号验证
+- `Regex`: 自定义正则表达式验证
+- ...
 
 ## 最佳实践
 
@@ -191,8 +201,7 @@ type User struct {
 func (u *User) Validate() error {
    return ValidateStruct(user, "User 不能为空",
         rule.Field(&user.Username,
-            rule.Length(3, 20),
-            rule.String().Errf("用户名不能为空"),
+            rule.Length(3, 20).Errf("用户名不符合规则"),
             // ...
         ),
         rule.Field(&user.Password,
@@ -201,8 +210,7 @@ func (u *User) Validate() error {
             // ...
         ),
         rule.Field(&user.Email,
-            rule.Email(),
-            rule.String().Errf("邮箱格式不正确"),
+            rule.IsEmail().Errf("邮箱格式不正确"),
             // ...
         ),
         // ...
@@ -217,13 +225,12 @@ func (u *User) Validate() error {
 ```go
 // 使用 AND 组合规则
 rule := rule.And(
-    rule.Length(3, 10),
-    rule.String().Errf("字符串格式不正确"),
+    rule.Length(3, 10).Errf("字符串格式不正确"),
 )
 
 // 使用 OR 组合规则
 rule := rule.Or(
-    rule.Email(),
+    rule.IsEmail(),
     rule.URL(),
 )
 ```

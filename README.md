@@ -55,16 +55,16 @@ func main() {
 
     err := arbiter.ValidateStruct(person, "Person cannot be nil",
         rule.Field(&person.Name,
-            rule.Length(2, 50),
-            rule.String().Errf("Name is required"),
+            rule.Length[string](2, 50).Errf("..."),
+            rule.Required[string]().Errf("..."),
         ),
         rule.Field(&person.Age,
             rule.Min(0),
             rule.Max(120),
         ),
         rule.Field(&person.Email,
-            rule.Email(),
-            rule.String().Errf("Invalid email"),
+            rule.Required[string]().Errf("required"),
+            rule.IsEmail().Errf("validate failed"),
         ),
     )
 
@@ -83,14 +83,13 @@ The main validation functions:
 ```go
 // Validate applies multiple rules to a single value
 err := Validate("hello",
-    rule.Length(3, 10),
-    rule.String().Errf("Invalid string"),
+    rule.Length[string](3, 10).Errf("Invalid string"),
 )
 
 // ValidateWithErrs collects all validation errors
 err := ValidateWithErrs("hello",
-    rule.Length(3, 10),
-    rule.String().Errf("Invalid string"),
+    rule.Required[string]().Errf("required")
+    rule.Length(3, 10).Errf("invalid string"),
 )
 
 // ValidateStruct validates a struct and its fields
@@ -107,8 +106,7 @@ For validating struct fields:
 ```go
 // Create a field validation rule
 nameRule := rule.Field(&person.Name,
-    rule.Length(2, 50),
-    rule.String().Errf("Name is required"),
+    rule.Length[string](2, 50).Errf("Name is required"),
 )
 ```
 
@@ -117,11 +115,11 @@ nameRule := rule.Field(&person.Name,
 #### String Rules
 - `StartWith`: Validate string prefix
 - `EndWith`: Validate string suffix
-- `ChineseOnly`: Validate Chinese characters
-- `FullWidthOnly`: Validate full-width characters
-- `HalfWidthOnly`: Validate half-width characters
-- `UpperCaseOnly`: Validate uppercase letters
-- `LowerCaseOnly`: Validate lowercase letters
+- `OnlyChinese`: Validate Chinese characters
+- `OnlyFullWidth`: Validate full-width characters
+- `OnlyHalfWidth`: Validate half-width characters
+- `OnlyUpperCase`: Validate uppercase letters
+- `OnlyLowerCase`: Validate lowercase letters
 - `SpecialChars`: Validate special characters
 - `Contains`: Validate substring presence
 - `NotContains`: Validate substring absence
@@ -135,22 +133,30 @@ nameRule := rule.Field(&person.Name,
 - `Even`: Even number validation
 - `Odd`: Odd number validation
 - `Precision`: Decimal precision validation
-
+- ...
+  
 #### Time Rules
 - `Before`: Earlier than specified time
 - `After`: Later than specified time
 - `Between`: Time range validation
-
+- ...
+  
 #### File Rules
-- `Exists`: File existence validation
 - `Size`: File size validation
 - `Extension`: File extension validation
-
+- ...
+  
 #### Network Rules
 - `IP`: IP address validation
 - `URL`: URL validation
-- `Email`: Email validation
+- ...
 
+### Regex Rules
+- `IsEmail`: email validation
+- `IsPhone`: phone number validation
+- `Regex`: custom regex validation
+- ...
+  
 ## Best Practices
 
 ### 1. Error Handling
@@ -191,16 +197,14 @@ type User struct {
 func (u *User) Validate() error {
     return ValidateStruct(user, "User cannot be nil",
         rule.Field(&user.Username,
-            rule.Length(3, 20),
-            rule.String().Errf("Username is required"),
+            rule.Length[string](3, 20).Errf("Username is required"),
         ),
         rule.Field(&user.Password,
-            rule.Length(8, 50),
+            rule.Length[string](8, 50),
             rule.SpecialChars(true).Errf("Password must contain special characters"),
         ),
         rule.Field(&user.Email,
-            rule.Email(),
-            rule.String().Errf("Invalid email"),
+            rule.IsEmail().Errf("Invalid email"),
         ),
     )
 }
@@ -213,13 +217,13 @@ func (u *User) Validate() error {
 ```go
 // Combine rules with AND
 rule := rule.And(
-    rule.Length(3, 10),
-    rule.String().Errf("Invalid string"),
+    rule.Required[string]().Errf("required"),
+    rule.Length(3, 10).Errf("Invalid string"),
 )
 
 // Combine rules with OR
 rule := rule.Or(
-    rule.Email(),
+    rule.IsEmail(),
     rule.URL(),
 )
 ```
