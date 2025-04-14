@@ -49,9 +49,6 @@ func getCompiledRegex(pattern string) (*regexp.Regexp, error) {
 	if re, ok := compiledRegexes[pattern]; ok {
 		return re, nil
 	}
-	if re, ok := compiledRegexes[pattern]; ok {
-		return re, nil
-	}
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return nil, err
