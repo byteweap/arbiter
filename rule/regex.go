@@ -233,8 +233,11 @@ func Regex(pattern string) *RegexRule {
 //	    // Handle validation error
 //	}
 func (r *RegexRule) Validate(value string) error {
-	if r.regex == nil {
+	if r.e != nil {
 		return r.e
+	}
+	if r.regex == nil {
+		return fmt.Errorf("regex is nil")
 	}
 	if !r.regex.MatchString(value) {
 		if r.e != nil {
