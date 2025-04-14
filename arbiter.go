@@ -94,6 +94,9 @@ func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
 //	    ),
 //	)
 func ValidateStruct(value any, nilErr string, fields ...IFieldRule) error {
+	if value == nil {
+		return errors.New("value cannot be nil")
+	}
 	// value is must be a pointer
 	v := reflect.ValueOf(value)
 	if v.Kind() != reflect.Ptr || (!v.IsNil() && v.Elem().Kind() != reflect.Struct) {
