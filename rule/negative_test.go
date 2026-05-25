@@ -39,6 +39,6 @@ func BenchmarkNegativeRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		Negative[int]().Validate(-1)
+		_ = Negative[int]().Validate(-1)
 	}
 }

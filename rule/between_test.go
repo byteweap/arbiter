@@ -41,6 +41,6 @@ func BenchmarkBetweenRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		Between(3, 10).Validate(5)
+		_ = Between(3, 10).Validate(5)
 	}
 }

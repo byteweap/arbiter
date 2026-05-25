@@ -251,7 +251,9 @@ func TestFileSizeErrf(t *testing.T) {
 func TestFileTypeErrf(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := tmpDir + "/test"
-	os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644)
+	if err := os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644); err != nil {
+		t.Fatal(err)
+	}
 	f, _ := os.Open(tmpFile)
 	defer f.Close()
 
@@ -271,7 +273,9 @@ func TestFileExtensionErrf(t *testing.T) {
 func TestFileMimeTypeErrf(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := tmpDir + "/test.png"
-	os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644)
+	if err := os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644); err != nil {
+		t.Fatal(err)
+	}
 	f, _ := os.Open(tmpFile)
 	defer f.Close()
 

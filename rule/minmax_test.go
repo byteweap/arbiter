@@ -184,7 +184,7 @@ func BenchmarkMinRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		Min(10).Validate(5)
+		_ = Min(10).Validate(5)
 	}
 }
 
@@ -205,6 +205,6 @@ func BenchmarkMaxRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		Max(10).Validate(15)
+		_ = Max(10).Validate(15)
 	}
 }

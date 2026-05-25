@@ -266,7 +266,7 @@ func BenchmarkInRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		In("a", "b", "c").Validate("a")
+		_ = In("a", "b", "c").Validate("a")
 	}
 }
 
@@ -276,6 +276,6 @@ func BenchmarkNotInRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		NotIn("a", "b", "c").Validate("d")
+		_ = NotIn("a", "b", "c").Validate("d")
 	}
 }
