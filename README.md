@@ -4,6 +4,10 @@
 
 # Arbiter
 
+[![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?logo=go)](https://go.dev)
+[![CI](https://github.com/byteweap/arbiter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/byteweap/arbiter/actions)
+[![codecov](https://codecov.io/gh/byteweap/arbiter/branch/master/graph/badge.svg)](https://codecov.io/gh/byteweap/arbiter)
+
 A powerful and flexible data validation framework for Go.
 
 English | [简体中文](README-CN.md)
