@@ -39,6 +39,6 @@ func BenchmarkPositiveRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		Positive[int]().Validate(1)
+		_ = Positive[int]().Validate(1)
 	}
 }

@@ -88,6 +88,6 @@ func BenchmarkNonZeroRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		NonZero[int]().Validate(1)
+		_ = NonZero[int]().Validate(1)
 	}
 }

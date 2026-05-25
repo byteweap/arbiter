@@ -102,7 +102,6 @@ func TestValidateStruct(t *testing.T) {
 			arbiter.Field(&person.Website, rule.Domain()),
 			arbiter.Field(&person.Password, rule.PasswordStrength()),
 		)
-
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
@@ -111,7 +110,6 @@ func TestValidateStruct(t *testing.T) {
 	// Test invalid struct (nil)
 	t.Run("nil struct", func(t *testing.T) {
 		err := arbiter.ValidateStruct(nil, "Person cannot be nil")
-
 		if err == nil {
 			t.Error("Expected error for nil struct, got nil")
 		}
@@ -129,7 +127,6 @@ func TestValidateStruct(t *testing.T) {
 		err := arbiter.ValidateStruct(person, "Person cannot be nil",
 			arbiter.Field(&person.Name, rule.OnlyHalfWidth()),
 		)
-
 		if err == nil {
 			t.Error("Expected error for non-pointer struct, got nil")
 		}
@@ -150,7 +147,6 @@ func TestValidateStruct(t *testing.T) {
 			arbiter.Field(&person.Website, rule.Domain()),
 			arbiter.Field(&person.Password, rule.PasswordStrength()),
 		)
-
 		if err == nil {
 			t.Error("Expected error for full-width characters in name, got nil")
 		}

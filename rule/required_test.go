@@ -101,45 +101,19 @@ func BenchmarkRequiredRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-
-		// string
-		Required[string]().Validate("")
-		// int
-		Required[int]().Validate(0)
-		// int8
-		Required[int8]().Validate(int8(0))
-		// int16
-		Required[int16]().Validate(int16(0))
-
-		// int32
-		Required[int32]().Validate(int32(0))
-
-		// int64
-		Required[int64]().Validate(int64(0))
-
-		// uint
-		Required[uint]().Validate(uint(0))
-		// uint8
-		Required[uint8]().Validate(uint8(0))
-		// uint16
-		Required[uint16]().Validate(uint16(0))
-
-		// uint32
-		Required[uint32]().Validate(uint32(0))
-
-		// uint64
-		Required[uint64]().Validate(uint64(0))
-
-		// float32
-		Required[float32]().Validate(float32(0.0))
-
-		// float64
-		Required[float64]().Validate(float64(0.0))
-
-		// pointer
-		Required[*int]().Validate(nil)
-
-		// nil pointer
-		Required[*int]().Validate(nil)
+		_ = Required[string]().Validate("")
+		_ = Required[int]().Validate(0)
+		_ = Required[int8]().Validate(int8(0))
+		_ = Required[int16]().Validate(int16(0))
+		_ = Required[int32]().Validate(int32(0))
+		_ = Required[int64]().Validate(int64(0))
+		_ = Required[uint]().Validate(uint(0))
+		_ = Required[uint8]().Validate(uint8(0))
+		_ = Required[uint16]().Validate(uint16(0))
+		_ = Required[uint32]().Validate(uint32(0))
+		_ = Required[uint64]().Validate(uint64(0))
+		_ = Required[float32]().Validate(float32(0.0))
+		_ = Required[float64]().Validate(float64(0.0))
+		_ = Required[*int]().Validate(nil)
 	}
 }
