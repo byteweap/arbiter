@@ -104,7 +104,7 @@ func NonZero[T any]() *NonZeroRule[T] {
 //	err = rule.Validate(Person{Name: "John"}) // returns nil
 //	err = rule.Validate(Person{})             // returns error
 //
-//nolint:gocognit // type dispatch for all Go types is inherently complex
+//nolint:gocyclo,gocognit // type dispatch for all Go types is inherently complex
 func (r *NonZeroRule[T]) Validate(value T) error {
 
 	// Get reflection value

@@ -7,7 +7,6 @@ import (
 )
 
 func TestInRule(t *testing.T) {
-
 	// string
 	err := In("a", "b", "c").Validate("a")
 	assert.Nil(t, err)
@@ -119,11 +118,9 @@ func TestInRule(t *testing.T) {
 	// bool slice
 	err = In([]bool{true, false}...).Validate(true)
 	assert.Nil(t, err)
-
 }
 
 func TestNotInRule(t *testing.T) {
-
 	// string
 	err := NotIn("a", "b", "c").Validate("d")
 	assert.Nil(t, err)
@@ -227,7 +224,6 @@ func TestNotInRule(t *testing.T) {
 	// float64 slice
 	err = NotIn([]float64{1, 2, 3}...).Validate(float64(4))
 	assert.Nil(t, err)
-
 }
 
 func TestInRuleErrf(t *testing.T) {
@@ -261,7 +257,6 @@ func TestNotInFallback(t *testing.T) {
 }
 
 func BenchmarkInRule(b *testing.B) {
-
 	b.ReportAllocs()
 	b.ResetTimer()
 

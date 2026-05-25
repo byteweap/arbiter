@@ -309,7 +309,7 @@ func PasswordComplex() *PasswordComplexRule {
 //	err = rule.Validate("password123")     // returns error
 //	err = rule.Validate("")                // returns nil (empty string is valid)
 //
-//nolint:gocognit // multiple checks (length, char types, repeats, patterns) are inherently complex
+//nolint:gocyclo,gocognit // multiple checks (length, char types, repeats, patterns) are inherently complex
 func (r *PasswordComplexRule) Validate(value string) error {
 	if value == "" {
 		return nil

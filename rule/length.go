@@ -38,7 +38,7 @@ type LengthRule[T any] struct {
 //
 //	// Create a rule for arrays (1-5 elements)
 //	arrayRule := Len[[]int](1, 5).Err("Array must have 1-5 elements")
-func Len[T any](min int, max int) *LengthRule[T] {
+func Len[T any](min, max int) *LengthRule[T] {
 	return &LengthRule[T]{min: min, max: max, e: fmt.Errorf(ErrLengthFormat, min, max)}
 }
 
@@ -59,6 +59,7 @@ func Len[T any](min int, max int) *LengthRule[T] {
 //	if err := rule.Validate([]int{1, 2, 3}); err != nil {
 //	    // Handle validation error
 //	}
+
 //nolint:gocyclo // type dispatch for all Go types is inherently complex
 func (r *LengthRule[T]) Validate(value T) error {
 	var (
