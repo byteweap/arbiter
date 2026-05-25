@@ -230,6 +230,18 @@ func TestNotInRule(t *testing.T) {
 
 }
 
+func TestInRuleErrf(t *testing.T) {
+	err := In("a", "b", "c").Errf("custom in error").Validate("d")
+	if err == nil || err.Error() != "custom in error" {
+		t.Errorf("In().Errf() error = %v, want custom in error", err)
+	}
+
+	err = NotIn("a", "b", "c").Errf("custom notin error").Validate("a")
+	if err == nil || err.Error() != "custom notin error" {
+		t.Errorf("NotIn().Errf() error = %v, want custom notin error", err)
+	}
+}
+
 func BenchmarkInRule(b *testing.B) {
 
 	b.ReportAllocs()

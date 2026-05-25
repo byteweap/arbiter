@@ -522,3 +522,67 @@ func TestNotContains(t *testing.T) {
 		})
 	}
 }
+
+func TestChineseOnlyErrf(t *testing.T) {
+	rule := OnlyChinese().Errf("custom chinese error")
+	err := rule.Validate("你好world")
+	if err == nil || err.Error() != "custom chinese error" {
+		t.Errorf("OnlyChinese().Errf() error = %v, want custom chinese error", err)
+	}
+}
+
+func TestFullWidthOnlyErrf(t *testing.T) {
+	rule := OnlyFullWidth().Errf("custom fullwidth error")
+	err := rule.Validate("ＨＥＬＬＯ world")
+	if err == nil || err.Error() != "custom fullwidth error" {
+		t.Errorf("OnlyFullWidth().Errf() error = %v, want custom fullwidth error", err)
+	}
+}
+
+func TestHalfWidthOnlyErrf(t *testing.T) {
+	rule := OnlyHalfWidth().Errf("custom halfwidth error")
+	err := rule.Validate("hello ＷＯＲＬＤ")
+	if err == nil || err.Error() != "custom halfwidth error" {
+		t.Errorf("OnlyHalfWidth().Errf() error = %v, want custom halfwidth error", err)
+	}
+}
+
+func TestUpperCaseOnlyErrf(t *testing.T) {
+	rule := OnlyUpperCase().Errf("custom upper error")
+	err := rule.Validate("HELLO world")
+	if err == nil || err.Error() != "custom upper error" {
+		t.Errorf("OnlyUpperCase().Errf() error = %v, want custom upper error", err)
+	}
+}
+
+func TestLowerCaseOnlyErrf(t *testing.T) {
+	rule := OnlyLowerCase().Errf("custom lower error")
+	err := rule.Validate("hello WORLD")
+	if err == nil || err.Error() != "custom lower error" {
+		t.Errorf("OnlyLowerCase().Errf() error = %v, want custom lower error", err)
+	}
+}
+
+func TestSpecialCharsErrf(t *testing.T) {
+	rule := SpecialChars(true).Errf("custom special error")
+	err := rule.Validate("hello")
+	if err == nil || err.Error() != "custom special error" {
+		t.Errorf("SpecialChars(true).Errf() error = %v, want custom special error", err)
+	}
+}
+
+func TestContainsErrf(t *testing.T) {
+	rule := Contains("foo").Errf("custom contains error")
+	err := rule.Validate("hello world")
+	if err == nil || err.Error() != "custom contains error" {
+		t.Errorf("Contains().Errf() error = %v, want custom contains error", err)
+	}
+}
+
+func TestNotContainsErrf(t *testing.T) {
+	rule := NotContains("world").Errf("custom notcontains error")
+	err := rule.Validate("hello world")
+	if err == nil || err.Error() != "custom notcontains error" {
+		t.Errorf("NotContains().Errf() error = %v, want custom notcontains error", err)
+	}
+}

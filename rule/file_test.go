@@ -208,3 +208,47 @@ func TestFileMimeType(t *testing.T) {
 		})
 	}
 }
+
+func TestFileSizeErrf(t *testing.T) {
+	rule := FileSize(1, 5).Errf("custom size error")
+	err := rule.Validate(bytes.NewReader([]byte("hello world")))
+	if err == nil || err.Error() != "custom size error" {
+		t.Errorf("FileSize().Errf() error = %v, want custom size error", err)
+	}
+}
+
+func TestFileTypeErrf(t *testing.T) {
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test"
+	os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644)
+	f, _ := os.Open(tmpFile)
+	defer f.Close()
+
+	rule := FileType("jpeg").Errf("custom type error")
+	err := rule.Validate(f)
+	if err == nil || err.Error() != "custom type error" {
+		t.Errorf("FileType().Errf() error = %v, want custom type error", err)
+	}
+}
+
+func TestFileExtensionErrf(t *testing.T) {
+	rule := FileExtension("jpg", "png").Errf("custom ext error")
+	err := rule.Validate("test.gif")
+	if err == nil || err.Error() != "custom ext error" {
+		t.Errorf("FileExtension().Errf() error = %v, want custom ext error", err)
+	}
+}
+
+func TestFileMimeTypeErrf(t *testing.T) {
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.png"
+	os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644)
+	f, _ := os.Open(tmpFile)
+	defer f.Close()
+
+	rule := FileMimeType("image/jpeg").Errf("custom mime error")
+	err := rule.Validate(f)
+	if err == nil || err.Error() != "custom mime error" {
+		t.Errorf("FileMimeType().Errf() error = %v, want custom mime error", err)
+	}
+}

@@ -15,4 +15,7 @@ func TestMultipleRule(t *testing.T) {
 
 	err = MultipleOf(2).Validate(3)
 	assert.Equal(t, fmt.Errorf(ErrMultipleFormat, 2), err)
+
+	err = MultipleOf(2).Errf("custom multiple error").Validate(3)
+	assert.Equal(t, "custom multiple error", err.Error())
 }
