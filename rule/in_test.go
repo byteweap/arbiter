@@ -232,14 +232,22 @@ func TestNotInRule(t *testing.T) {
 
 func TestInRuleErrf(t *testing.T) {
 	err := In("a", "b", "c").Errf("custom in error").Validate("d")
-	if err == nil || err.Error() != "custom in error" {
-		t.Errorf("In().Errf() error = %v, want custom in error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom in error", err.Error())
 
 	err = NotIn("a", "b", "c").Errf("custom notin error").Validate("a")
-	if err == nil || err.Error() != "custom notin error" {
-		t.Errorf("NotIn().Errf() error = %v, want custom notin error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom notin error", err.Error())
+}
+
+func TestInSlice(t *testing.T) {
+	assert.Nil(t, InSlice([]int{1, 2, 3}).Validate(1))
+	assert.Error(t, InSlice([]int{1, 2, 3}).Validate(5))
+}
+
+func TestNotInSlice(t *testing.T) {
+	assert.Nil(t, NotInSlice([]int{1, 2, 3}).Validate(5))
+	assert.Error(t, NotInSlice([]int{1, 2, 3}).Validate(1))
 }
 
 func BenchmarkInRule(b *testing.B) {

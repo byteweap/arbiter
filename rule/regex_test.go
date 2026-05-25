@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRegex(t *testing.T) {
@@ -51,4 +53,39 @@ func TestRegex(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIsEmail(t *testing.T) {
+	assert.Nil(t, IsEmail().Validate("user@example.com"))
+	assert.Error(t, IsEmail().Validate("not-an-email"))
+}
+
+func TestIsPhone(t *testing.T) {
+	assert.Nil(t, IsPhone().Validate("+8613800138000"))
+	assert.Error(t, IsPhone().Validate("abc"))
+}
+
+func TestIsSocialCredit(t *testing.T) {
+	assert.Nil(t, IsSocialCredit().Validate("913101157984053414"))
+	assert.Error(t, IsSocialCredit().Validate("123"))
+}
+
+func TestIsTaxNumber(t *testing.T) {
+	assert.Nil(t, IsTaxNumber().Validate("123456789012345"))
+	assert.Error(t, IsTaxNumber().Validate("abc"))
+}
+
+func TestIsBankCard(t *testing.T) {
+	assert.Nil(t, IsBankCard().Validate("6222021234567890"))
+	assert.Error(t, IsBankCard().Validate("123"))
+}
+
+func TestIsPassport(t *testing.T) {
+	assert.Nil(t, IsPassport().Validate("E12345678"))
+	assert.Error(t, IsPassport().Validate("12345678"))
+}
+
+func TestIsIDCard(t *testing.T) {
+	assert.Nil(t, IsIDCard().Validate("11010119900307777X"))
+	assert.Error(t, IsIDCard().Validate("123"))
 }

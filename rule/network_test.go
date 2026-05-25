@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDomain(t *testing.T) {
@@ -34,12 +36,35 @@ func TestDomain(t *testing.T) {
 
 }
 
-func TestDomainErrf(t *testing.T) {
-	rule := Domain().Errf("custom domain error")
-	err := rule.Validate("invalid-domain")
-	if err == nil || err.Error() != "custom domain error" {
-		t.Errorf("Domain().Errf() error = %v, want custom domain error", err)
+func TestDomainBoundary(t *testing.T) {
+	tests := []struct {
+		name    string
+		domain  string
+		wantErr bool
+	}{
+		{name: "empty", domain: "", wantErr: true},
+		{name: "too long", domain: string(make([]byte, 256)), wantErr: true},
+		{name: "single label", domain: "localhost", wantErr: true},
+		{name: "part too long", domain: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.example.com", wantErr: true},
+		{name: "leading hyphen", domain: "-example.com", wantErr: true},
+		{name: "trailing hyphen", domain: "example-.com", wantErr: true},
+		{name: "empty part", domain: "example..com", wantErr: true},
+		{name: "invalid char", domain: "exam ple.com", wantErr: true},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := Domain().Validate(tt.domain)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Domain().Validate(%q) error = %v, wantErr %v", tt.domain, err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestDomainErrf(t *testing.T) {
+	err := Domain().Errf("custom domain error").Validate("invalid-domain")
+	assert.Error(t, err)
+	assert.Equal(t, "custom domain error", err.Error())
 }
 
 func TestPortRule(t *testing.T) {
@@ -67,11 +92,9 @@ func TestPortRule(t *testing.T) {
 }
 
 func TestPortRuleErrf(t *testing.T) {
-	rule := Port().Errf("custom port error")
-	err := rule.Validate("99999")
-	if err == nil || err.Error() != "custom port error" {
-		t.Errorf("Port().Errf() error = %v, want custom port error", err)
-	}
+	err := Port().Errf("custom port error").Validate("99999")
+	assert.Error(t, err)
+	assert.Equal(t, "custom port error", err.Error())
 }
 
 func TestMACAddressRule(t *testing.T) {
@@ -96,11 +119,9 @@ func TestMACAddressRule(t *testing.T) {
 }
 
 func TestMACAddressRuleErrf(t *testing.T) {
-	rule := MACAddress().Errf("custom mac error")
-	err := rule.Validate("invalid-mac")
-	if err == nil || err.Error() != "custom mac error" {
-		t.Errorf("MACAddress().Errf() error = %v, want custom mac error", err)
-	}
+	err := MACAddress().Errf("custom mac error").Validate("invalid-mac")
+	assert.Error(t, err)
+	assert.Equal(t, "custom mac error", err.Error())
 }
 
 func TestSubnetMaskRule(t *testing.T) {
@@ -132,9 +153,7 @@ func TestSubnetMaskRule(t *testing.T) {
 }
 
 func TestSubnetMaskRuleErrf(t *testing.T) {
-	rule := SubnetMask().Errf("custom mask error")
-	err := rule.Validate("255.255.255.1")
-	if err == nil || err.Error() != "custom mask error" {
-		t.Errorf("SubnetMask().Errf() error = %v, want custom mask error", err)
-	}
+	err := SubnetMask().Errf("custom mask error").Validate("255.255.255.1")
+	assert.Error(t, err)
+	assert.Equal(t, "custom mask error", err.Error())
 }

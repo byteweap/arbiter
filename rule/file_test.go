@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFileSize(t *testing.T) {
@@ -212,9 +214,8 @@ func TestFileMimeType(t *testing.T) {
 func TestFileSizeErrf(t *testing.T) {
 	rule := FileSize(1, 5).Errf("custom size error")
 	err := rule.Validate(bytes.NewReader([]byte("hello world")))
-	if err == nil || err.Error() != "custom size error" {
-		t.Errorf("FileSize().Errf() error = %v, want custom size error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom size error", err.Error())
 }
 
 func TestFileTypeErrf(t *testing.T) {
@@ -226,17 +227,15 @@ func TestFileTypeErrf(t *testing.T) {
 
 	rule := FileType("jpeg").Errf("custom type error")
 	err := rule.Validate(f)
-	if err == nil || err.Error() != "custom type error" {
-		t.Errorf("FileType().Errf() error = %v, want custom type error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom type error", err.Error())
 }
 
 func TestFileExtensionErrf(t *testing.T) {
 	rule := FileExtension("jpg", "png").Errf("custom ext error")
 	err := rule.Validate("test.gif")
-	if err == nil || err.Error() != "custom ext error" {
-		t.Errorf("FileExtension().Errf() error = %v, want custom ext error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom ext error", err.Error())
 }
 
 func TestFileMimeTypeErrf(t *testing.T) {
@@ -248,7 +247,6 @@ func TestFileMimeTypeErrf(t *testing.T) {
 
 	rule := FileMimeType("image/jpeg").Errf("custom mime error")
 	err := rule.Validate(f)
-	if err == nil || err.Error() != "custom mime error" {
-		t.Errorf("FileMimeType().Errf() error = %v, want custom mime error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom mime error", err.Error())
 }

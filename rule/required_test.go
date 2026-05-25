@@ -67,9 +67,8 @@ func TestRequiredRule(t *testing.T) {
 
 func TestRequiredRuleErrf(t *testing.T) {
 	err := Required[string]().Errf("custom required error").Validate("")
-	if err == nil || err.Error() != "custom required error" {
-		t.Errorf("Required[string]().Errf() error = %v, want custom required error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom required error", err.Error())
 }
 
 func BenchmarkRequiredRule(b *testing.B) {

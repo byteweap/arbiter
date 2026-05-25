@@ -3,6 +3,8 @@ package rule
 import (
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStringStartsWith(t *testing.T) {
@@ -524,65 +526,49 @@ func TestNotContains(t *testing.T) {
 }
 
 func TestChineseOnlyErrf(t *testing.T) {
-	rule := OnlyChinese().Errf("custom chinese error")
-	err := rule.Validate("你好world")
-	if err == nil || err.Error() != "custom chinese error" {
-		t.Errorf("OnlyChinese().Errf() error = %v, want custom chinese error", err)
-	}
+	err := OnlyChinese().Errf("custom chinese error").Validate("你好world")
+	assert.Error(t, err)
+	assert.Equal(t, "custom chinese error", err.Error())
 }
 
 func TestFullWidthOnlyErrf(t *testing.T) {
-	rule := OnlyFullWidth().Errf("custom fullwidth error")
-	err := rule.Validate("ＨＥＬＬＯ world")
-	if err == nil || err.Error() != "custom fullwidth error" {
-		t.Errorf("OnlyFullWidth().Errf() error = %v, want custom fullwidth error", err)
-	}
+	err := OnlyFullWidth().Errf("custom fullwidth error").Validate("ＨＥＬＬＯ world")
+	assert.Error(t, err)
+	assert.Equal(t, "custom fullwidth error", err.Error())
 }
 
 func TestHalfWidthOnlyErrf(t *testing.T) {
-	rule := OnlyHalfWidth().Errf("custom halfwidth error")
-	err := rule.Validate("hello ＷＯＲＬＤ")
-	if err == nil || err.Error() != "custom halfwidth error" {
-		t.Errorf("OnlyHalfWidth().Errf() error = %v, want custom halfwidth error", err)
-	}
+	err := OnlyHalfWidth().Errf("custom halfwidth error").Validate("hello ＷＯＲＬＤ")
+	assert.Error(t, err)
+	assert.Equal(t, "custom halfwidth error", err.Error())
 }
 
 func TestUpperCaseOnlyErrf(t *testing.T) {
-	rule := OnlyUpperCase().Errf("custom upper error")
-	err := rule.Validate("HELLO world")
-	if err == nil || err.Error() != "custom upper error" {
-		t.Errorf("OnlyUpperCase().Errf() error = %v, want custom upper error", err)
-	}
+	err := OnlyUpperCase().Errf("custom upper error").Validate("HELLO world")
+	assert.Error(t, err)
+	assert.Equal(t, "custom upper error", err.Error())
 }
 
 func TestLowerCaseOnlyErrf(t *testing.T) {
-	rule := OnlyLowerCase().Errf("custom lower error")
-	err := rule.Validate("hello WORLD")
-	if err == nil || err.Error() != "custom lower error" {
-		t.Errorf("OnlyLowerCase().Errf() error = %v, want custom lower error", err)
-	}
+	err := OnlyLowerCase().Errf("custom lower error").Validate("hello WORLD")
+	assert.Error(t, err)
+	assert.Equal(t, "custom lower error", err.Error())
 }
 
 func TestSpecialCharsErrf(t *testing.T) {
-	rule := SpecialChars(true).Errf("custom special error")
-	err := rule.Validate("hello")
-	if err == nil || err.Error() != "custom special error" {
-		t.Errorf("SpecialChars(true).Errf() error = %v, want custom special error", err)
-	}
+	err := SpecialChars(true).Errf("custom special error").Validate("hello")
+	assert.Error(t, err)
+	assert.Equal(t, "custom special error", err.Error())
 }
 
 func TestContainsErrf(t *testing.T) {
-	rule := Contains("foo").Errf("custom contains error")
-	err := rule.Validate("hello world")
-	if err == nil || err.Error() != "custom contains error" {
-		t.Errorf("Contains().Errf() error = %v, want custom contains error", err)
-	}
+	err := Contains("foo").Errf("custom contains error").Validate("hello world")
+	assert.Error(t, err)
+	assert.Equal(t, "custom contains error", err.Error())
 }
 
 func TestNotContainsErrf(t *testing.T) {
-	rule := NotContains("world").Errf("custom notcontains error")
-	err := rule.Validate("hello world")
-	if err == nil || err.Error() != "custom notcontains error" {
-		t.Errorf("NotContains().Errf() error = %v, want custom notcontains error", err)
-	}
+	err := NotContains("world").Errf("custom notcontains error").Validate("hello world")
+	assert.Error(t, err)
+	assert.Equal(t, "custom notcontains error", err.Error())
 }

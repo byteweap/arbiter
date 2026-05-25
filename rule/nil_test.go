@@ -23,15 +23,13 @@ func TestNilRule(t *testing.T) {
 
 func TestNilRuleErrf(t *testing.T) {
 	err := Nil.Errf("custom nil error").Validate("not nil")
-	if err == nil || err.Error() != "custom nil error" {
-		t.Errorf("Nil.Errf() error = %v, want custom nil error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom nil error", err.Error())
 
 	var v *string
 	err = NotNil.Errf("custom notnil error").Validate(v)
-	if err == nil || err.Error() != "custom notnil error" {
-		t.Errorf("NotNil.Errf() error = %v, want custom notnil error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom notnil error", err.Error())
 }
 
 func BenchmarkNilRule(b *testing.B) {

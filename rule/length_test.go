@@ -112,9 +112,8 @@ func TestLengthRule(t *testing.T) {
 
 func TestLengthRuleErrf(t *testing.T) {
 	err := Len[string](5, 10).Errf("custom length error").Validate("hi")
-	if err == nil || err.Error() != "custom length error" {
-		t.Errorf("Len().Errf() error = %v, want custom length error", err)
-	}
+	assert.Error(t, err)
+	assert.Equal(t, "custom length error", err.Error())
 }
 
 func BenchmarkLengthRule(b *testing.B) {
