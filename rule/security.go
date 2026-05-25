@@ -128,6 +128,8 @@ func PasswordStrength() *PasswordStrengthRule {
 //	err := rule.Validate("StrongP@ssw0rd")  // returns nil
 //	err = rule.Validate("weak")             // returns error
 //	err = rule.Validate("")                 // returns nil (empty string is valid)
+//
+//nolint:gocyclo // multiple character type checks are inherently complex
 func (r *PasswordStrengthRule) Validate(value string) error {
 	if value == "" {
 		return nil
@@ -306,6 +308,8 @@ func PasswordComplex() *PasswordComplexRule {
 //	err := rule.Validate("C0mpl3x!P@ss")  // returns nil
 //	err = rule.Validate("password123")     // returns error
 //	err = rule.Validate("")                // returns nil (empty string is valid)
+//
+//nolint:gocognit // multiple checks (length, char types, repeats, patterns) are inherently complex
 func (r *PasswordComplexRule) Validate(value string) error {
 	if value == "" {
 		return nil

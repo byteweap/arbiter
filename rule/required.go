@@ -50,6 +50,7 @@ func Required[T RequiredType]() *RequiredRule[T] {
 //	if err := rule.Validate(""); err != nil {
 //	    // Handle validation error
 //	}
+//nolint:gocyclo // type dispatch for all Go types is inherently complex
 func (r *RequiredRule[T]) Validate(value T) error {
 	var ok bool
 	switch v := any(value).(type) {

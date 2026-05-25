@@ -59,6 +59,7 @@ func Len[T any](min int, max int) *LengthRule[T] {
 //	if err := rule.Validate([]int{1, 2, 3}); err != nil {
 //	    // Handle validation error
 //	}
+//nolint:gocyclo // type dispatch for all Go types is inherently complex
 func (r *LengthRule[T]) Validate(value T) error {
 	var (
 		length int

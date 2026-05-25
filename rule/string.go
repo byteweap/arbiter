@@ -10,6 +10,8 @@ import (
 
 // isFullWidth reports whether a rune is a full-width (wide) character.
 // Includes CJK ideographs, fullwidth ASCII variants, CJK punctuation, etc.
+//
+//nolint:gocyclo // multiple Unicode range checks are inherently complex
 func isFullWidth(r rune) bool {
 	if r == 0x3000 { // Ideographic space
 		return true

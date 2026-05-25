@@ -151,6 +151,6 @@ func BenchmarkZeroRule(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		Zero[int]().Validate(0)
+		_ = Zero[int]().Validate(0)
 	}
 }

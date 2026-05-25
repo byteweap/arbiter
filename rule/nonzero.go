@@ -103,6 +103,8 @@ func NonZero[T any]() *NonZeroRule[T] {
 //	}
 //	err = rule.Validate(Person{Name: "John"}) // returns nil
 //	err = rule.Validate(Person{})             // returns error
+//
+//nolint:gocognit // type dispatch for all Go types is inherently complex
 func (r *NonZeroRule[T]) Validate(value T) error {
 
 	// Get reflection value
@@ -147,7 +149,6 @@ func (r *NonZeroRule[T]) Validate(value T) error {
 			return r.e
 		}
 	case reflect.Struct:
-		// For structs, check if all fields are zero
 		for i := 0; i < v.NumField(); i++ {
 			field := v.Field(i)
 			if !field.IsZero() {
@@ -155,6 +156,7 @@ func (r *NonZeroRule[T]) Validate(value T) error {
 			}
 		}
 		return r.e
+	default:
 	}
 
 	return nil

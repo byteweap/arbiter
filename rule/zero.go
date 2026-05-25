@@ -99,6 +99,7 @@ func (r *ZeroRule[T]) Errf(format string, args ...any) *ZeroRule[T] {
 //	isZero(nil)         // returns true
 //	isZero([]int{})     // returns true
 //	isZero(struct{}{})  // returns true
+//nolint:gocyclo // type dispatch for all Go types is inherently complex
 func isZero[T Zeroable](value T) bool {
 	// Handle basic types
 	switch v := any(value).(type) {
