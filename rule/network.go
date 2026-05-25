@@ -308,8 +308,11 @@ func (r *SubnetMaskRule) Validate(mask string) error {
 		}
 		if b != 255 {
 			zeroFound = true
-			for i := 0; i < 8; i++ {
-				if (b & (1 << uint(7-i))) != 0 {
+			seenZero := false
+			for i := 7; i >= 0; i-- {
+				if ((b >> uint(i)) & 1) == 0 {
+					seenZero = true
+				} else if seenZero {
 					valid = false
 					break
 				}

@@ -111,7 +111,7 @@ func (r *NonZeroRule[T]) Validate(value T) error {
 	// Handle pointer types
 	if v.Kind() == reflect.Ptr {
 		if v.IsNil() {
-			return ErrNonZero
+			return r.e
 		}
 		v = v.Elem()
 	}
@@ -120,31 +120,31 @@ func (r *NonZeroRule[T]) Validate(value T) error {
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if v.Int() == 0 {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		if v.Uint() == 0 {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.Float32, reflect.Float64:
 		if v.Float() == 0 {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.String:
 		if v.String() == "" {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.Bool:
 		if !v.Bool() {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.Slice, reflect.Map:
 		if v.IsNil() || v.Len() == 0 {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.Array:
 		if v.Len() == 0 {
-			return ErrNonZero
+			return r.e
 		}
 	case reflect.Struct:
 		// For structs, check if all fields are zero

@@ -445,7 +445,7 @@ func TestHoliday(t *testing.T) {
 		},
 		{
 			name:    "valid: weekend",
-			rule:    Holiday(holiday),
+			rule:    Holiday(holiday, weekend),
 			value:   weekend,
 			wantErr: false,
 		},

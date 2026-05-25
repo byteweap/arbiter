@@ -89,11 +89,14 @@ func (r *PrecisionRule) Validate(value float64) error {
 		return nil
 	}
 
-	// Get the length of the decimal part
-	decimalLen := len(parts[1])
+	// Get the decimal part and strip any exponent suffix
+	decimalPart := parts[1]
+	if idx := strings.IndexByte(decimalPart, 'e'); idx >= 0 {
+		decimalPart = decimalPart[:idx]
+	}
 
 	// If decimal length exceeds the specified precision, return error
-	if decimalLen > r.precision {
+	if len(decimalPart) > r.precision {
 		return r.e
 	}
 
@@ -191,11 +194,14 @@ func (r *Float32PrecisionRule) Validate(value float32) error {
 		return nil
 	}
 
-	// Get the length of the decimal part
-	decimalLen := len(parts[1])
+	// Get the decimal part and strip any exponent suffix
+	decimalPart := parts[1]
+	if idx := strings.IndexByte(decimalPart, 'e'); idx >= 0 {
+		decimalPart = decimalPart[:idx]
+	}
 
 	// If decimal length exceeds the specified precision, return error
-	if decimalLen > r.precision {
+	if len(decimalPart) > r.precision {
 		return r.e
 	}
 
