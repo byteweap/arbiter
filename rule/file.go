@@ -6,10 +6,23 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"mime"
+	"net/http"
 	"path/filepath"
 	"strings"
 )
+
+// mimeSubtype extracts the subtype from a MIME type string (e.g., "image/png" -> "png").
+func mimeSubtype(mimeType string) string {
+	_, after, ok := strings.Cut(mimeType, "/")
+	if !ok {
+		return mimeType
+	}
+	// Handle parameters like "text/plain; charset=utf-8"
+	if idx := strings.IndexByte(after, ';'); idx >= 0 {
+		after = after[:idx]
+	}
+	return strings.TrimSpace(after)
+}
 
 // File validation errors
 var (
@@ -61,7 +74,8 @@ func FileSize(min, max int64) *FileSizeRule {
 }
 
 // Validate checks if the given file's size falls within the specified range.
-// The file is read to determine its size, which is then compared against the min and max values.
+// The file's size is determined efficiently using io.Seeker when available,
+// falling back to reading the entire file content otherwise.
 //
 // Example:
 //
@@ -70,10 +84,27 @@ func FileSize(min, max int64) *FileSizeRule {
 //	rule := FileSize(1024, 10485760)
 //	err := rule.Validate(file)  // returns nil if file size is between 1KB and 10MB
 func (r *FileSizeRule) Validate(file io.Reader) error {
-	// Get file size by reading the entire file
-	size, err := io.Copy(io.Discard, file)
-	if err != nil {
-		return err
+	var size int64
+
+	if seeker, ok := file.(io.Seeker); ok {
+		current, err := seeker.Seek(0, io.SeekCurrent)
+		if err != nil {
+			return err
+		}
+		size, err = seeker.Seek(0, io.SeekEnd)
+		if err != nil {
+			return err
+		}
+		_, err = seeker.Seek(current, io.SeekStart)
+		if err != nil {
+			return err
+		}
+	} else {
+		var err error
+		size, err = io.Copy(io.Discard, file)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Check if file size is within the specified range
@@ -124,25 +155,33 @@ func FileType(allowedTypes ...string) *FileTypeRule {
 }
 
 // Validate checks if the given file's content type matches one of the allowed types.
-// The file's header bytes are examined to determine its type.
+// The file type is detected using magic byte signatures via http.DetectContentType.
 //
 // Example:
 //
 //	file, _ := os.Open("document.pdf")
 //	defer file.Close()
-//	rule := FileType("PDF", "DOCX")
-//	err := rule.Validate(file)  // returns nil if file is a PDF or DOCX
+//	rule := FileType("pdf", "png", "jpeg")
+//	err := rule.Validate(file)  // returns nil if file type is allowed
 func (r *FileTypeRule) Validate(file io.Reader) error {
-	// Read file header to determine file type
 	header := make([]byte, 512)
-	_, err := file.Read(header)
+	n, err := file.Read(header)
 	if err != nil && err != io.EOF {
 		return err
 	}
+	header = header[:n]
 
-	// Check if file type is in the allowed list
-	for _, allowedType := range r.allowedTypes {
-		if strings.Contains(string(header), allowedType) {
+	detected := http.DetectContentType(header)
+
+	for _, allowed := range r.allowedTypes {
+		allowedLower := strings.ToLower(allowed)
+		// Match against full MIME type (e.g., "image/png")
+		if strings.EqualFold(detected, allowedLower) {
+			return nil
+		}
+		// Match against MIME subtype (e.g., "png" from "image/png")
+		subtype := mimeSubtype(detected)
+		if strings.EqualFold(subtype, allowedLower) {
 			return nil
 		}
 	}
@@ -259,31 +298,35 @@ func FileMimeType(allowedMimeTypes ...string) *FileMimeTypeRule {
 }
 
 // Validate checks if the given file's MIME type is in the allowed list.
-// The MIME type is determined using the file's extension and the mime package.
+// The MIME type is determined using magic byte signatures via http.DetectContentType.
 //
 // Example:
 //
 //	file, _ := os.Open("document.pdf")
 //	defer file.Close()
-//	rule := FileMimeType("application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-//	err := rule.Validate(file)  // returns nil if file is a PDF or DOCX
+//	rule := FileMimeType("application/pdf")
+//	err := rule.Validate(file)  // returns nil if file is a PDF
 func (r *FileMimeTypeRule) Validate(file io.Reader) error {
-	// Read file header to determine MIME type
 	header := make([]byte, 512)
-	_, err := file.Read(header)
+	n, err := file.Read(header)
 	if err != nil && err != io.EOF {
 		return err
 	}
+	header = header[:n]
 
-	// Get MIME type
-	mimeType := mime.TypeByExtension(filepath.Ext(string(header)))
+	mimeType := http.DetectContentType(header)
 	if mimeType == "" {
 		return r.e
 	}
 
-	// Check if MIME type is in the allowed list
-	for _, allowedMimeType := range r.allowedMimeTypes {
-		if mimeType == allowedMimeType {
+	// Parameters like "charset=utf-8" should not affect matching
+	baseType := mimeType
+	if idx := strings.IndexByte(mimeType, ';'); idx >= 0 {
+		baseType = strings.TrimSpace(mimeType[:idx])
+	}
+
+	for _, allowed := range r.allowedMimeTypes {
+		if strings.EqualFold(baseType, allowed) {
 			return nil
 		}
 	}

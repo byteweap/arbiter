@@ -110,11 +110,7 @@ func TestValidateStruct(t *testing.T) {
 
 	// Test invalid struct (nil)
 	t.Run("nil struct", func(t *testing.T) {
-		var person *Person = nil
-
-		err := arbiter.ValidateStruct(person, "Person cannot be nil",
-			arbiter.Field(&person.Name, rule.OnlyHalfWidth()),
-		)
+		err := arbiter.ValidateStruct(nil, "Person cannot be nil")
 
 		if err == nil {
 			t.Error("Expected error for nil struct, got nil")

@@ -13,6 +13,8 @@ import (
 var (
 	// ErrUUID is returned when a string is not a valid UUID format
 	ErrUUID = errors.New("invalid UUID format")
+
+	uuidRegex = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 )
 
 // UUIDRule validates that a string is a valid UUID.
@@ -83,9 +85,7 @@ func (r *UUIDRule) Validate(value string) error {
 		return nil
 	}
 
-	// Regular expression for UUID format
-	pattern := regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
-	if !pattern.MatchString(strings.ToLower(value)) {
+	if !uuidRegex.MatchString(strings.ToLower(value)) {
 		if r.e != nil {
 			return r.e
 		}

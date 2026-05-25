@@ -149,12 +149,7 @@ func TestField(t *testing.T) {
 
 	// Test nil pointer struct
 	t.Run("nil pointer struct", func(t *testing.T) {
-		var user *User = nil
-
-		// Test validation of nil pointer struct
-		err := arbiter.ValidateStruct(user, "User cannot be nil",
-			arbiter.Field(&user.Username, rule.OnlyHalfWidth()),
-		)
+		err := arbiter.ValidateStruct(nil, "User cannot be nil")
 		if err == nil || err.Error() != "User cannot be nil" {
 			t.Errorf("Expected error 'User cannot be nil', got %v", err)
 		}

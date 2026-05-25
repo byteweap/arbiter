@@ -10,6 +10,43 @@ import (
 	"unicode"
 )
 
+// Pre-compiled regexes for security validation (compiled once at init time).
+var (
+	regexUpper   = regexp.MustCompile(`[A-Z]`)
+	regexLower   = regexp.MustCompile(`[a-z]`)
+	regexDigit   = regexp.MustCompile(`[0-9]`)
+	regexSpecial = regexp.MustCompile(`[^A-Za-z0-9]`)
+
+	// XSS attack patterns (case-insensitive)
+	regexScript      = regexp.MustCompile(`(?i)<script[^>]*>.*?</script>`)
+	regexJavascript  = regexp.MustCompile(`(?i)javascript:`)
+	regexVBScript    = regexp.MustCompile(`(?i)vbscript:`)
+	regexOnload      = regexp.MustCompile(`(?i)onload=`)
+	regexOnerror     = regexp.MustCompile(`(?i)onerror=`)
+	regexOnclick     = regexp.MustCompile(`(?i)onclick=`)
+	regexOnmouseover = regexp.MustCompile(`(?i)onmouseover=`)
+	regexEval        = regexp.MustCompile(`(?i)eval\(.*\)`)
+	regexExpression  = regexp.MustCompile(`(?i)expression\(.*\)`)
+	regexIFrame      = regexp.MustCompile(`(?i)<iframe[^>]*>`)
+	regexImg         = regexp.MustCompile(`(?i)<img[^>]*>`)
+	regexEmbed       = regexp.MustCompile(`(?i)<embed[^>]*>`)
+	regexObject      = regexp.MustCompile(`(?i)<object[^>]*>`)
+	regexStyle       = regexp.MustCompile(`(?i)<style[^>]*>.*?</style>`)
+
+	// SQL injection patterns (case-insensitive)
+	regexSQLSelect    = regexp.MustCompile(`(?i)(select|insert|update|delete|drop|union|exec|execute)\s+`)
+	regexSQLAndOr     = regexp.MustCompile(`(?i)(\s+and\s+|\s+or\s+)[\d'"]`)
+	regexSQLXor       = regexp.MustCompile(`(?i)(\s+xor\s+|\s+nand\s+|\s+not\s+)[\d'"]`)
+	regexSQLLike      = regexp.MustCompile(`(?i)(\s+like\s+|\s+between\s+|\s+in\s+)[\d'"]`)
+	regexSQLIsNull    = regexp.MustCompile(`(?i)(\s+is\s+null|\s+is\s+not\s+null)`)
+	regexSQLComment   = regexp.MustCompile(`(?i)(--|#|\*|;)$`)
+	regexSQLQuote     = regexp.MustCompile(`(?i)'(\s*)(union|select|or|and)`)
+	regexSQLBlock     = regexp.MustCompile(`(?i)/\*.*\*/`)
+	regexSQLWaitFor   = regexp.MustCompile(`(?i)waitfor\s+delay\s+`)
+	regexSQLBenchmark = regexp.MustCompile(`(?i)benchmark\(.*\)`)
+	regexSQLSleep     = regexp.MustCompile(`(?i)sleep\(.*\)`)
+)
+
 // Security validation errors
 var (
 	// ErrPasswordStrength is returned when a password does not meet the strength requirements.
@@ -283,16 +320,16 @@ func (r *PasswordComplexRule) Validate(value string) error {
 
 	// Check character type count
 	var charTypes int
-	if regexp.MustCompile(`[A-Z]`).MatchString(value) {
+	if regexUpper.MatchString(value) {
 		charTypes++
 	}
-	if regexp.MustCompile(`[a-z]`).MatchString(value) {
+	if regexLower.MatchString(value) {
 		charTypes++
 	}
-	if regexp.MustCompile(`[0-9]`).MatchString(value) {
+	if regexDigit.MatchString(value) {
 		charTypes++
 	}
-	if regexp.MustCompile(`[^A-Za-z0-9]`).MatchString(value) {
+	if regexSpecial.MatchString(value) {
 		charTypes++
 	}
 
@@ -421,25 +458,15 @@ func (r *XSSRule) Validate(value string) error {
 	}
 
 	// Check for common XSS attack patterns
-	patterns := []string{
-		`<script[^>]*>.*?</script>`,
-		`javascript:`,
-		`vbscript:`,
-		`onload=`,
-		`onerror=`,
-		`onclick=`,
-		`onmouseover=`,
-		`eval\(.*\)`,
-		`expression\(.*\)`,
-		`<iframe[^>]*>`,
-		`<img[^>]*>`,
-		`<embed[^>]*>`,
-		`<object[^>]*>`,
-		`<style[^>]*>.*?</style>`,
+	xssPatterns := []*regexp.Regexp{
+		regexScript, regexJavascript, regexVBScript,
+		regexOnload, regexOnerror, regexOnclick, regexOnmouseover,
+		regexEval, regexExpression,
+		regexIFrame, regexImg, regexEmbed, regexObject, regexStyle,
 	}
 
-	for _, pattern := range patterns {
-		if regexp.MustCompile(`(?i)` + pattern).MatchString(value) {
+	for _, re := range xssPatterns {
+		if re.MatchString(value) {
 			if r.e != nil {
 				return r.e
 			}
@@ -503,23 +530,15 @@ func (r *SQLInjectionRule) Validate(value string) error {
 	}
 
 	// Check for common SQL injection attack patterns
-	patterns := []string{
-		`(?i)(select|insert|update|delete|drop|union|exec|execute)\s+`,
-		`(?i)(\s+and\s+|\s+or\s+)[\d'"]`,
-		`(?i)(\s+xor\s+|\s+nand\s+|\s+not\s+)[\d'"]`,
-		`(?i)(\s+like\s+|\s+between\s+|\s+in\s+)[\d'"]`,
-		`(?i)(\s+is\s+null|\s+is\s+not\s+null)`,
-		`(?i)(--|\#|\*|;)$`,
-		`(?i)'(\s*)(union|select|or|and)`,
-		`(?i)\/\*.*\*\/`,
-		`(?i)waitfor\s+delay\s+`,
-		`(?i)benchmark\(.*\)`,
-		`(?i)sleep\(.*\)`,
+	sqlPatterns := []*regexp.Regexp{
+		regexSQLSelect, regexSQLAndOr, regexSQLXor, regexSQLLike,
+		regexSQLIsNull, regexSQLComment, regexSQLQuote, regexSQLBlock,
+		regexSQLWaitFor, regexSQLBenchmark, regexSQLSleep,
 	}
 
 	valueLower := strings.ToLower(value)
-	for _, pattern := range patterns {
-		if regexp.MustCompile(pattern).MatchString(valueLower) {
+	for _, re := range sqlPatterns {
+		if re.MatchString(valueLower) {
 			if r.e != nil {
 				return r.e
 			}

@@ -23,6 +23,15 @@ var (
 	// It caches compiled regexes to avoid re-compiling the same pattern multiple times.
 	compiledRegexes = make(map[string]*regexp.Regexp)
 	regexMutex      sync.RWMutex
+
+	// Pre-compiled regexes for commonly used patterns.
+	regexEmail        = regexp.MustCompile(emailPattern)
+	regexPhone        = regexp.MustCompile(phonePattern)
+	regexSocialCredit = regexp.MustCompile(socialCreditPattern)
+	regexTaxNumber    = regexp.MustCompile(taxNumberPattern)
+	regexBankCard     = regexp.MustCompile(bankCardPattern)
+	regexPassport     = regexp.MustCompile(passportPattern)
+	regexIDCard       = regexp.MustCompile(idCardPattern)
 )
 
 const (
@@ -36,15 +45,21 @@ const (
 )
 
 // getCompiledRegex returns a compiled regular expression for the given pattern.
-// It caches compiled regexes to avoid re-compiling the same pattern multiple times.
+// It caches compiled regexes using double-checked locking to avoid re-compiling.
 //
 // Example:
 //
 //	re, err := getCompiledRegex("^[A-Z][a-z]+$")
 func getCompiledRegex(pattern string) (*regexp.Regexp, error) {
-
 	regexMutex.RLock()
-	defer regexMutex.RUnlock()
+	re, ok := compiledRegexes[pattern]
+	regexMutex.RUnlock()
+	if ok {
+		return re, nil
+	}
+
+	regexMutex.Lock()
+	defer regexMutex.Unlock()
 
 	if re, ok := compiledRegexes[pattern]; ok {
 		return re, nil
@@ -79,14 +94,7 @@ type RegexRule struct {
 //	err := rule.Validate("user@example.com")  // returns nil
 //	err = rule.Validate("invalid-email")      // returns ErrRegex
 func IsEmail() *RegexRule {
-	regex, err := getCompiledRegex(emailPattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrEmail}
+	return &RegexRule{regex: regexEmail, e: ErrEmail}
 }
 
 // IsPhone returns a new RegexRule that validates phone numbers.
@@ -98,14 +106,7 @@ func IsEmail() *RegexRule {
 //	err := rule.Validate("+8612345678901")  // returns nil
 //	err = rule.Validate("123-456-7890")     // returns ErrRegex
 func IsPhone() *RegexRule {
-	regex, err := getCompiledRegex(phonePattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrPhone}
+	return &RegexRule{regex: regexPhone, e: ErrPhone}
 }
 
 // IsSocialCredit returns a new RegexRule that validates social credit codes.
@@ -116,14 +117,7 @@ func IsPhone() *RegexRule {
 //	rule := IsSocialCredit()
 //	err := rule.Validate("123456789012345678")  // returns nil
 func IsSocialCredit() *RegexRule {
-	regex, err := getCompiledRegex(socialCreditPattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrSocialCredit}
+	return &RegexRule{regex: regexSocialCredit, e: ErrSocialCredit}
 }
 
 // IsTaxNumber returns a new RegexRule that validates tax numbers.
@@ -134,14 +128,7 @@ func IsSocialCredit() *RegexRule {
 //	rule := IsTaxNumber()
 //	err := rule.Validate("123456789012345678")  // returns nil
 func IsTaxNumber() *RegexRule {
-	regex, err := getCompiledRegex(taxNumberPattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrTaxNumber}
+	return &RegexRule{regex: regexTaxNumber, e: ErrTaxNumber}
 }
 
 // IsBankCard returns a new RegexRule that validates bank card numbers.
@@ -152,14 +139,7 @@ func IsTaxNumber() *RegexRule {
 //	rule := IsBankCard()
 //	err := rule.Validate("123456789012345678")  // returns nil
 func IsBankCard() *RegexRule {
-	regex, err := getCompiledRegex(bankCardPattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrBankCard}
+	return &RegexRule{regex: regexBankCard, e: ErrBankCard}
 }
 
 // IsPassport returns a new RegexRule that validates passport numbers.
@@ -171,14 +151,7 @@ func IsBankCard() *RegexRule {
 //	err := rule.Validate("G12345678")  // returns nil
 //	err = rule.Validate("12345678")  // returns ErrRegex
 func IsPassport() *RegexRule {
-	regex, err := getCompiledRegex(passportPattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrPassport}
+	return &RegexRule{regex: regexPassport, e: ErrPassport}
 }
 
 // IsIDCard returns a new RegexRule that validates ID card numbers.
@@ -189,14 +162,7 @@ func IsPassport() *RegexRule {
 //	rule := IsIDCard()
 //	err := rule.Validate("123456789012345678")  // returns nil
 func IsIDCard() *RegexRule {
-	regex, err := getCompiledRegex(idCardPattern)
-	if err != nil {
-		return &RegexRule{
-			regex: nil,
-			e:     fmt.Errorf("invalid regular expression: %w", err),
-		}
-	}
-	return &RegexRule{regex: regex, e: ErrIDCard}
+	return &RegexRule{regex: regexIDCard, e: ErrIDCard}
 }
 
 // Regex creates a new RegexRule with a custom regular expression pattern.
@@ -225,6 +191,7 @@ func Regex(pattern string) *RegexRule {
 
 // Validate checks if the string matches the regular expression pattern.
 // Returns nil if the string matches, or an error if it doesn't.
+// Empty strings are considered valid (use Required() if needed).
 //
 // Example:
 //
@@ -233,10 +200,13 @@ func Regex(pattern string) *RegexRule {
 //	    // Handle validation error
 //	}
 func (r *RegexRule) Validate(value string) error {
-	if r.e != nil {
-		return r.e
+	if value == "" {
+		return nil
 	}
 	if r.regex == nil {
+		if r.e != nil {
+			return r.e
+		}
 		return fmt.Errorf("regex is nil")
 	}
 	if !r.regex.MatchString(value) {

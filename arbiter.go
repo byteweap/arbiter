@@ -33,8 +33,8 @@ import (
 //	    rule.NonZero(),               // must not be empty
 //	)
 func Validate[T any](value T, rules ...rule.Rule[T]) error {
-	for _, rule := range rules {
-		if err := rule.Validate(value); err != nil {
+	for _, r := range rules {
+		if err := r.Validate(value); err != nil {
 			return err
 		}
 	}
@@ -51,9 +51,9 @@ func Validate[T any](value T, rules ...rule.Rule[T]) error {
 //	    rule.String().Err("Invalid"), // custom error message
 //	)
 func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
-	errs := make([]error, 0)
-	for _, rule := range rules {
-		if err := rule.Validate(value); err != nil {
+	var errs []error
+	for _, r := range rules {
+		if err := r.Validate(value); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -95,6 +95,9 @@ func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
 //	)
 func ValidateStruct(value any, nilErr string, fields ...IFieldRule) error {
 	if value == nil {
+		if nilErr != "" {
+			return errors.New(nilErr)
+		}
 		return errors.New("value cannot be nil")
 	}
 	// value is must be a pointer

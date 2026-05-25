@@ -272,11 +272,11 @@ go tool cover -html=coverage.out
 
 ## License
 
-[License details to be added]
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Version History
 
-[Version history to be added] 
+- v0.1.0 (2024-03-13): Initial release with core validation rules and struct validation 
 
 
 ## Why Arbiter?

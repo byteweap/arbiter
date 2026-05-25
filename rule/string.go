@@ -8,6 +8,52 @@ import (
 	"unicode"
 )
 
+// isFullWidth reports whether a rune is a full-width (wide) character.
+// Includes CJK ideographs, fullwidth ASCII variants, CJK punctuation, etc.
+func isFullWidth(r rune) bool {
+	if r == 0x3000 { // Ideographic space
+		return true
+	}
+	// Fullwidth ASCII variants (FF01-FF5E) and fullwidth forms (FFE0-FFE6)
+	if (r >= 0xFF01 && r <= 0xFF60) || (r >= 0xFFE0 && r <= 0xFFE6) {
+		return true
+	}
+	// CJK Unified Ideographs (4E00-9FFF), Extension A (3400-4DBF)
+	if (r >= 0x3400 && r <= 0x9FFF) || (r >= 0x20000 && r <= 0x2FFFF) {
+		return true
+	}
+	// CJK Radicals/Strokes and Kangxi Radicals (2E80-2FFF)
+	if r >= 0x2E80 && r <= 0x2FFF {
+		return true
+	}
+	// CJK Symbols and Punctuation (3001-303F)
+	if r >= 0x3001 && r <= 0x303F {
+		return true
+	}
+	// CJK Compatibility (F900-FAFF), CJK Compatibility Forms (FE30-FE4F)
+	if (r >= 0xF900 && r <= 0xFAFF) || (r >= 0xFE30 && r <= 0xFE6F) {
+		return true
+	}
+	// Hangul Syllables (AC00-D7AF)
+	if r >= 0xAC00 && r <= 0xD7AF {
+		return true
+	}
+	return false
+}
+
+// isHalfWidth reports whether a rune is a half-width (narrow) character.
+func isHalfWidth(r rune) bool {
+	// ASCII printable (0x21-7E) and space (0x20)
+	if r >= 0x20 && r <= 0x7E {
+		return true
+	}
+	// Halfwidth Katakana (FF61-FF9F) and Halfwidth Hangul (FFA0-FFDC)
+	if r >= 0xFF61 && r <= 0xFFDC {
+		return true
+	}
+	return false
+}
+
 // Common string validation errors
 var (
 	ErrStartsWith     = errors.New("string must start with the specified prefix")
@@ -17,8 +63,8 @@ var (
 	ErrHalfWidthOnly  = errors.New("string must contain only half-width characters")
 	ErrUpperCaseOnly  = errors.New("string must contain only uppercase letters")
 	ErrLowerCaseOnly  = errors.New("string must contain only lowercase letters")
-	ErrSpecialChars   = errors.New("string contains special characters")
-	ErrNoSpecialChars = errors.New("string must not contain special characters")
+	ErrSpecialChars   = errors.New("string must not contain special characters")
+	ErrNoSpecialChars = errors.New("string must contain special characters")
 	ErrContains       = errors.New("string must contain the specified substring")
 	ErrNotContains    = errors.New("string must not contain the specified substring")
 )
@@ -241,7 +287,7 @@ func OnlyFullWidth() *FullWidthRule {
 //	}
 func (r *FullWidthRule) Validate(value string) error {
 	for _, char := range value {
-		if char < 0xFF01 || char > 0xFF5E {
+		if !isFullWidth(char) {
 			if r.e != nil {
 				return r.e
 			}
@@ -300,7 +346,7 @@ func OnlyHalfWidth() *HalfWidthRule {
 //	}
 func (r *HalfWidthRule) Validate(value string) error {
 	for _, char := range value {
-		if char > 0x7E {
+		if !isHalfWidth(char) {
 			if r.e != nil {
 				return r.e
 			}
@@ -350,6 +396,7 @@ func OnlyUpperCase() *UpperCaseRule {
 
 // Validate checks if the string contains only uppercase letters.
 // Returns nil if all letters are uppercase, or an error if any letter is not uppercase.
+// Non-letter characters (spaces, digits, punctuation) are allowed.
 //
 // Example:
 //
@@ -359,7 +406,7 @@ func OnlyUpperCase() *UpperCaseRule {
 //	}
 func (r *UpperCaseRule) Validate(value string) error {
 	for _, char := range value {
-		if !unicode.IsUpper(char) {
+		if unicode.IsLetter(char) && !unicode.IsUpper(char) {
 			if r.e != nil {
 				return r.e
 			}
@@ -409,6 +456,7 @@ func OnlyLowerCase() *LowerCaseRule {
 
 // Validate checks if the string contains only lowercase letters.
 // Returns nil if all letters are lowercase, or an error if any letter is not lowercase.
+// Non-letter characters (spaces, digits, punctuation) are allowed.
 //
 // Example:
 //
@@ -418,7 +466,7 @@ func OnlyLowerCase() *LowerCaseRule {
 //	}
 func (r *LowerCaseRule) Validate(value string) error {
 	for _, char := range value {
-		if !unicode.IsLower(char) {
+		if unicode.IsLetter(char) && !unicode.IsLower(char) {
 			if r.e != nil {
 				return r.e
 			}
@@ -480,6 +528,7 @@ func SpecialChars(allowSpecial bool) *SpecialCharsRule {
 
 // Validate checks if the string contains special characters according to the rule.
 // Returns nil if the string satisfies the rule, or an error if it doesn't.
+// Empty strings are considered valid (use Required() if needed).
 //
 // Example:
 //
@@ -488,15 +537,22 @@ func SpecialChars(allowSpecial bool) *SpecialCharsRule {
 //	    // Handle validation error
 //	}
 func (r *SpecialCharsRule) Validate(value string) error {
-	for _, char := range value {
-		isSpecial := !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsSpace(char)
-		if r.allowSpecial && isSpecial {
-			if r.e != nil {
-				return r.e
+	if value == "" {
+		return nil
+	}
+	if r.allowSpecial {
+		for _, char := range value {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsSpace(char) {
+				return nil
 			}
-			return ErrNoSpecialChars
 		}
-		if !r.allowSpecial && !isSpecial {
+		if r.e != nil {
+			return r.e
+		}
+		return ErrNoSpecialChars
+	}
+	for _, char := range value {
+		if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsSpace(char) {
 			if r.e != nil {
 				return r.e
 			}

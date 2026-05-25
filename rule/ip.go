@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strings"
 )
 
 var (
@@ -114,7 +113,7 @@ func IPv4() *IPv4Rule {
 
 // Validate checks if the given string is a valid IPv4 address.
 // Empty strings are considered valid (use Required() if needed).
-// The validation ensures the address contains dots and is a valid IP.
+// The validation uses net.ParseIP and ip.To4() for accurate detection.
 //
 // Example:
 //
@@ -128,7 +127,7 @@ func (r *IPv4Rule) Validate(value string) error {
 		return nil
 	}
 	ip := net.ParseIP(value)
-	if ip == nil || !strings.Contains(value, ".") {
+	if ip == nil || ip.To4() == nil {
 		if r.e != nil {
 			return r.e
 		}
@@ -178,7 +177,7 @@ func IPv6() *IPv6Rule {
 
 // Validate checks if the given string is a valid IPv6 address.
 // Empty strings are considered valid (use Required() if needed).
-// The validation ensures the address contains colons and is a valid IP.
+// The validation uses net.ParseIP and ip.To16() for accurate detection.
 //
 // Example:
 //
@@ -192,7 +191,7 @@ func (r *IPv6Rule) Validate(value string) error {
 		return nil
 	}
 	ip := net.ParseIP(value)
-	if ip == nil || !strings.Contains(value, ":") {
+	if ip == nil || ip.To16() == nil || ip.To4() != nil {
 		if r.e != nil {
 			return r.e
 		}

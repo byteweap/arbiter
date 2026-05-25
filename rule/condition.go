@@ -134,12 +134,18 @@ func Dependency[T any, D any](field, dependency string, validator Rule[D], value
 // Validate checks if the value satisfies the dependency rule.
 // Returns nil if validation passes, otherwise returns the error.
 func (r *DependencyRule[T, D]) Validate(value T) error {
-	if r.validator == nil {
+	if r.validator == nil || r.valueGetter == nil {
 		return nil
 	}
 
 	dependencyValue := r.valueGetter(value)
-	return r.validator.Validate(dependencyValue)
+	if err := r.validator.Validate(dependencyValue); err != nil {
+		if r.e != nil {
+			return r.e
+		}
+		return ErrDependency
+	}
+	return nil
 }
 
 // Errf sets a custom error message for the validation rule using a formatted string.

@@ -68,19 +68,19 @@ func TestFileType(t *testing.T) {
 	}{
 		{
 			name:         "valid type",
-			allowedTypes: []string{"PNG"},
-			content:      []byte{0x89, 0x50, 0x4E, 0x47}, // PNG header
+			allowedTypes: []string{"png"},
+			content:      []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, // PNG magic (8 bytes)
 			wantErr:      false,
 		},
 		{
 			name:         "invalid type",
-			allowedTypes: []string{"JPEG"},
-			content:      []byte{0x89, 0x50, 0x4E, 0x47}, // PNG header
+			allowedTypes: []string{"jpeg"},
+			content:      []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, // PNG header
 			wantErr:      true,
 		},
 		{
 			name:         "empty file",
-			allowedTypes: []string{"PNG"},
+			allowedTypes: []string{"png"},
 			content:      []byte{},
 			wantErr:      true,
 		},
@@ -166,14 +166,14 @@ func TestFileMimeType(t *testing.T) {
 		{
 			name:             "valid mime type",
 			allowedMimeTypes: []string{"image/png"},
-			content:          []byte{0x89, 0x50, 0x4E, 0x47}, // PNG header
+			content:          []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, // PNG magic (8 bytes)
 			extension:        ".png",
 			wantErr:          false,
 		},
 		{
 			name:             "invalid mime type",
 			allowedMimeTypes: []string{"image/jpeg"},
-			content:          []byte{0x89, 0x50, 0x4E, 0x47}, // PNG header
+			content:          []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, // PNG header
 			extension:        ".png",
 			wantErr:          true,
 		},
