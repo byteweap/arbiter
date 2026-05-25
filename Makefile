@@ -1,4 +1,7 @@
-.PHONY: test cover coverage-html
+.PHONY: lint test cover coverage-html
+
+lint:
+	golangci-lint run ./...
 
 test:
 	go test ./...
