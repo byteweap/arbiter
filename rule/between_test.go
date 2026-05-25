@@ -7,6 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBetweenFallback(t *testing.T) {
+	rule := &BetweenRule[int]{min: 10, max: 20}
+	err := rule.Validate(25)
+	assert.Error(t, err)
+}
+
 func TestBetweenRule(t *testing.T) {
 	err := Between(3, 10).Validate(2)
 	assert.Equal(t, fmt.Errorf(ErrBetweenFormat, 3, 10), err)

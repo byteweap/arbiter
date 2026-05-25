@@ -113,8 +113,39 @@ func TestZeroRule(t *testing.T) {
 	})
 }
 
+func TestZeroRuleReflectBranches(t *testing.T) {
+	t.Run("complex64", func(t *testing.T) {
+		assert.Nil(t, Zero[complex64]().Validate(complex64(0)))
+		assert.Equal(t, ErrZero, Zero[complex64]().Validate(complex64(1+2i)))
+	})
+	t.Run("complex128", func(t *testing.T) {
+		assert.Nil(t, Zero[complex128]().Validate(complex128(0)))
+		assert.Equal(t, ErrZero, Zero[complex128]().Validate(complex128(1+2i)))
+	})
+	t.Run("struct", func(t *testing.T) {
+		type s struct{ A int }
+		assert.Nil(t, Zero[s]().Validate(s{}))
+		assert.Equal(t, ErrZero, Zero[s]().Validate(s{A: 1}))
+	})
+	t.Run("array", func(t *testing.T) {
+		assert.Nil(t, Zero[[0]int]().Validate([0]int{}))
+		assert.Equal(t, ErrZero, Zero[[3]int]().Validate([3]int{1, 2, 3}))
+	})
+}
+
 // BenchmarkZeroRule benchmarks the performance of the Zero validation rule.
 // It measures the time taken to validate a zero integer value.
+func TestZeroFallback(t *testing.T) {
+	err := (&ZeroRule[int]{}).Validate(1)
+	assert.Error(t, err)
+}
+
+func TestZeroRuleDeepEqual(t *testing.T) {
+	ch := make(chan int, 1)
+	assert.Equal(t, ErrZero, Zero[chan int]().Validate(ch))
+	assert.Nil(t, Zero[chan int]().Validate((chan int)(nil)))
+}
+
 func BenchmarkZeroRule(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()

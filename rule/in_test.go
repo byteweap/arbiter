@@ -250,6 +250,16 @@ func TestNotInSlice(t *testing.T) {
 	assert.Error(t, NotInSlice([]int{1, 2, 3}).Validate(1))
 }
 
+func TestInFallback(t *testing.T) {
+	err := (&InRule[string]{values: []string{"a", "b", "c"}, notIn: false}).Validate("d")
+	assert.Error(t, err)
+}
+
+func TestNotInFallback(t *testing.T) {
+	err := (&InRule[string]{values: []string{"a", "b", "c"}, notIn: true}).Validate("a")
+	assert.Error(t, err)
+}
+
 func BenchmarkInRule(b *testing.B) {
 
 	b.ReportAllocs()

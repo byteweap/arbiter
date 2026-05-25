@@ -1,6 +1,7 @@
 package rule
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -88,4 +89,10 @@ func TestIsPassport(t *testing.T) {
 func TestIsIDCard(t *testing.T) {
 	assert.Nil(t, IsIDCard().Validate("11010119900307777X"))
 	assert.Error(t, IsIDCard().Validate("123"))
+}
+
+func TestRegexFallback(t *testing.T) {
+	re := regexp.MustCompile(`^[a-z]+$`)
+	err := (&RegexRule{regex: re}).Validate("123")
+	assert.Error(t, err)
 }

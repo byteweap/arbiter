@@ -3,6 +3,8 @@ package rule
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTimeBetween(t *testing.T) {
@@ -88,8 +90,20 @@ func TestBefore(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "invalid: time is after with IncludeTime",
+			rule:    Before(now).IncludeTime(),
+			value:   after,
+			wantErr: true,
+		},
+		{
 			name:    "custom error message",
 			rule:    Before(now).Errf("custom error"),
+			value:   after,
+			wantErr: true,
+		},
+		{
+			name:    "fallback error",
+			rule:    &BeforeRule{t: now, includeTime: false},
 			value:   after,
 			wantErr: true,
 		},
@@ -141,8 +155,20 @@ func TestAfter(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "invalid: time is before with IncludeTime",
+			rule:    After(now).IncludeTime(),
+			value:   before,
+			wantErr: true,
+		},
+		{
 			name:    "custom error message",
 			rule:    After(now).Errf("custom error"),
+			value:   before,
+			wantErr: true,
+		},
+		{
+			name:    "fallback error",
+			rule:    &AfterRule{t: now, includeTime: false},
 			value:   before,
 			wantErr: true,
 		},
@@ -471,4 +497,61 @@ func TestHoliday(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestTimeBetweenFallback(t *testing.T) {
+	now := time.Now()
+	rule := &TimeBetweenRule{start: now, end: now.Add(2 * time.Hour)}
+	err := rule.Validate(now.Add(-time.Hour))
+	assert.Error(t, err)
+}
+
+func TestDateFormatFallback(t *testing.T) {
+	rule := &DateFormatRule{format: "2006-01-02"}
+	err := rule.Validate("2024/03/15")
+	assert.Error(t, err)
+}
+
+func TestTimeFormatFallback(t *testing.T) {
+	rule := &TimeFormatRule{format: "15:04:05"}
+	err := rule.Validate("14:30")
+	assert.Error(t, err)
+}
+
+func TestDateTimeFormatFallback(t *testing.T) {
+	rule := &DateTimeFormatRule{format: "2006-01-02 15:04:05"}
+	err := rule.Validate("2024/03/15 14:30:00")
+	assert.Error(t, err)
+}
+
+func TestWeekendFallback(t *testing.T) {
+	workday := time.Date(2024, 3, 15, 0, 0, 0, 0, time.Local)
+	err := (&WeekendRule{}).Validate(workday)
+	assert.Error(t, err)
+}
+
+func TestWorkdayFallback(t *testing.T) {
+	saturday := time.Date(2024, 3, 16, 0, 0, 0, 0, time.Local)
+	err := (&WorkdayRule{}).Validate(saturday)
+	assert.Error(t, err)
+}
+
+func TestHolidayFallback(t *testing.T) {
+	workday := time.Date(2024, 3, 15, 0, 0, 0, 0, time.Local)
+	err := (&HolidayRule{}).Validate(workday)
+	assert.Error(t, err)
+}
+
+func TestBeforeIncludeFallback(t *testing.T) {
+	now := time.Now()
+	after := now.Add(time.Hour)
+	err := (&BeforeRule{t: now, includeTime: true}).Validate(after)
+	assert.Error(t, err)
+}
+
+func TestAfterIncludeFallback(t *testing.T) {
+	now := time.Now()
+	before := now.Add(-time.Hour)
+	err := (&AfterRule{t: now, includeTime: true}).Validate(before)
+	assert.Error(t, err)
 }

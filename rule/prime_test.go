@@ -1,6 +1,10 @@
 package rule
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestPrime(t *testing.T) {
 	tests := []struct {
@@ -272,4 +276,9 @@ func TestPrime(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPrimeFallback(t *testing.T) {
+	err := (&PrimeRule{}).Validate(4)
+	assert.Error(t, err)
 }

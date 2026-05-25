@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIP(t *testing.T) {
@@ -179,4 +181,19 @@ func TestIPv6(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIPFallback(t *testing.T) {
+	err := (&IPRule{}).Validate("not an ip")
+	assert.Error(t, err)
+}
+
+func TestIPv4Fallback(t *testing.T) {
+	err := (&IPv4Rule{}).Validate("::1")
+	assert.Error(t, err)
+}
+
+func TestIPv6Fallback(t *testing.T) {
+	err := (&IPv6Rule{}).Validate("192.168.1.1")
+	assert.Error(t, err)
 }

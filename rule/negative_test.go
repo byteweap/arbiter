@@ -29,6 +29,11 @@ func TestNegativeRule(t *testing.T) {
 	assert.Equal(t, "must be negative", customErr.Error())
 }
 
+func TestNegativeFallback(t *testing.T) {
+	err := (&NegativeRule[int]{}).Validate(1)
+	assert.Error(t, err)
+}
+
 func BenchmarkNegativeRule(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()

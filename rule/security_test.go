@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPasswordStrength(t *testing.T) {
@@ -334,4 +336,24 @@ func TestRuleConfiguration(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPasswordStrengthFallback(t *testing.T) {
+	err := (&PasswordStrengthRule{}).Validate("x")
+	assert.Error(t, err)
+}
+
+func TestPasswordComplexFallback(t *testing.T) {
+	err := (&PasswordComplexRule{}).Validate("a")
+	assert.Error(t, err)
+}
+
+func TestXSSFallback(t *testing.T) {
+	err := (&XSSRule{}).Validate("<script>alert('xss')</script>")
+	assert.Error(t, err)
+}
+
+func TestSQLInjectionFallback(t *testing.T) {
+	err := (&SQLInjectionRule{}).Validate("SELECT * FROM users")
+	assert.Error(t, err)
 }

@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestURL(t *testing.T) {
@@ -69,4 +71,9 @@ func TestURL(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestURLFallback(t *testing.T) {
+	err := (&URLRule{}).Validate("not a url")
+	assert.Error(t, err)
 }

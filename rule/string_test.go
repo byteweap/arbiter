@@ -525,6 +525,22 @@ func TestNotContains(t *testing.T) {
 	}
 }
 
+func TestFullWidthExtensionB(t *testing.T) {
+	assert.Nil(t, OnlyFullWidth().Validate("𠮷"))
+	assert.Nil(t, OnlyFullWidth().Validate("ＨＥＬＬＯ。"))
+	assert.Nil(t, OnlyFullWidth().Validate("가"))
+	assert.Nil(t, OnlyFullWidth().Validate("￠"))
+	assert.Nil(t, OnlyFullWidth().Validate("\u3000")) // ideographic space
+	assert.Nil(t, OnlyFullWidth().Validate("\u2F00")) // Kangxi radical
+	assert.Nil(t, OnlyFullWidth().Validate("\uF900")) // CJK compatibility
+	assert.Nil(t, OnlyFullWidth().Validate("\uFE30")) // CJK compatibility forms
+}
+
+func TestHalfWidthKatakana(t *testing.T) {
+	assert.Nil(t, OnlyHalfWidth().Validate("ｶﾀｶﾅ"))
+	assert.Nil(t, OnlyHalfWidth().Validate("helloｶﾀｶﾅ"))
+}
+
 func TestChineseOnlyErrf(t *testing.T) {
 	err := OnlyChinese().Errf("custom chinese error").Validate("你好world")
 	assert.Error(t, err)
@@ -571,4 +587,54 @@ func TestNotContainsErrf(t *testing.T) {
 	err := NotContains("world").Errf("custom notcontains error").Validate("hello world")
 	assert.Error(t, err)
 	assert.Equal(t, "custom notcontains error", err.Error())
+}
+
+func TestStartWithFallback(t *testing.T) {
+	err := (&StartWithRule{prefix: "x"}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestEndWithFallback(t *testing.T) {
+	err := (&EndWithRule{suffix: "x"}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestChineseOnlyFallback(t *testing.T) {
+	err := (&ChineseOnlyRule{}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestFullWidthFallback(t *testing.T) {
+	err := (&FullWidthRule{}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestHalfWidthFallback(t *testing.T) {
+	err := (&HalfWidthRule{}).Validate("汉字")
+	assert.Error(t, err)
+}
+
+func TestUpperCaseFallback(t *testing.T) {
+	err := (&UpperCaseRule{}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestLowerCaseFallback(t *testing.T) {
+	err := (&LowerCaseRule{}).Validate("HELLO")
+	assert.Error(t, err)
+}
+
+func TestSpecialCharsFallback(t *testing.T) {
+	err := (&SpecialCharsRule{allowSpecial: true}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestContainsFallback(t *testing.T) {
+	err := (&ContainsRule{substring: "x"}).Validate("hello")
+	assert.Error(t, err)
+}
+
+func TestNotContainsFallback(t *testing.T) {
+	err := (&NotContainsRule{substring: "hello"}).Validate("hello")
+	assert.Error(t, err)
 }

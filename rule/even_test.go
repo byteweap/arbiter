@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEven(t *testing.T) {
@@ -57,4 +59,9 @@ func TestEven(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestEvenFallback(t *testing.T) {
+	err := (&EvenRule[int]{}).Validate(3)
+	assert.Error(t, err)
 }

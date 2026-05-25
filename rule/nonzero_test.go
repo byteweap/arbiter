@@ -65,6 +65,22 @@ func TestNonZeroRule(t *testing.T) {
 
 	customErr := NonZero[int]().Errf("not zero").Validate(0)
 	assert.Equal(t, "not zero", customErr.Error())
+
+	assert.Equal(t, ErrNonZero, NonZero[[0]int]().Validate([0]int{}))
+	assert.Nil(t, NonZero[[3]int]().Validate([3]int{1, 2, 3}))
+
+	assert.Equal(t, "bool err", NonZero[bool]().Errf("bool err").Validate(false).Error())
+	assert.Equal(t, "slice err", NonZero[[]int]().Errf("slice err").Validate(nil).Error())
+	assert.Equal(t, "map err", NonZero[map[string]int]().Errf("map err").Validate(nil).Error())
+}
+
+func TestNonZeroStruct(t *testing.T) {
+	type Test struct {
+		A int
+		B string
+	}
+	assert.Nil(t, NonZero[Test]().Validate(Test{A: 1}))
+	assert.Equal(t, ErrNonZero, NonZero[Test]().Validate(Test{}))
 }
 
 func BenchmarkNonZeroRule(b *testing.B) {

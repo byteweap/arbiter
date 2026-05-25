@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUUID(t *testing.T) {
@@ -63,4 +65,9 @@ func TestUUID(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUUIDFallback(t *testing.T) {
+	err := (&UUIDRule{}).Validate("not a uuid")
+	assert.Error(t, err)
 }

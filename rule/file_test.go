@@ -2,6 +2,7 @@ package rule
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -209,6 +210,35 @@ func TestFileMimeType(t *testing.T) {
 			}
 		})
 	}
+}
+
+type nonSeekerReader struct {
+	data []byte
+	pos  int
+}
+
+func (r *nonSeekerReader) Read(p []byte) (int, error) {
+	if r.pos >= len(r.data) {
+		return 0, io.EOF
+	}
+	n := copy(p, r.data[r.pos:])
+	r.pos += n
+	return n, nil
+}
+
+func TestFileSizeNonSeeker(t *testing.T) {
+	rule := FileSize(1, 5)
+	err := rule.Validate(&nonSeekerReader{data: []byte("hello")})
+	assert.Nil(t, err)
+	err = FileSize(1, 3).Validate(&nonSeekerReader{data: []byte("hello")})
+	assert.Error(t, err)
+}
+
+func TestFileSizeSeeker(t *testing.T) {
+	rule := FileSize(5, 10)
+	err := rule.Validate(bytes.NewReader([]byte("hello world")))
+	assert.Error(t, err)
+	assert.Nil(t, FileSize(1, 20).Errf("size error").Validate(bytes.NewReader([]byte("hello world"))))
 }
 
 func TestFileSizeErrf(t *testing.T) {

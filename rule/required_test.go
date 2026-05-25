@@ -65,6 +65,32 @@ func TestRequiredRule(t *testing.T) {
 	assert.Equal(t, err, ErrRequired)
 }
 
+func TestRequiredRulePointerTypes(t *testing.T) {
+	assert.Error(t, Required[*int8]().Validate(nil))
+	assert.Error(t, Required[*int16]().Validate(nil))
+	assert.Error(t, Required[*int32]().Validate(nil))
+	assert.Error(t, Required[*int64]().Validate(nil))
+	assert.Error(t, Required[*uint]().Validate(nil))
+	assert.Error(t, Required[*uint8]().Validate(nil))
+	assert.Error(t, Required[*uint16]().Validate(nil))
+	assert.Error(t, Required[*uint32]().Validate(nil))
+	assert.Error(t, Required[*uint64]().Validate(nil))
+	assert.Error(t, Required[*float32]().Validate(nil))
+	assert.Error(t, Required[*float64]().Validate(nil))
+
+	assert.Error(t, Required[*string]().Validate(nil))
+	s := "hello"
+	assert.Nil(t, Required[*string]().Validate(&s))
+	p8 := int8(1)
+	assert.Nil(t, Required[*int8]().Validate(&p8))
+}
+
+type _testRequiredCustom int
+
+func TestRequiredRuleUnsupportedType(t *testing.T) {
+	assert.Error(t, Required[_testRequiredCustom]().Validate(_testRequiredCustom(0)))
+}
+
 func TestRequiredRuleErrf(t *testing.T) {
 	err := Required[string]().Errf("custom required error").Validate("")
 	assert.Error(t, err)

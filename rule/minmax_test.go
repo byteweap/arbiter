@@ -188,6 +188,16 @@ func BenchmarkMinRule(b *testing.B) {
 	}
 }
 
+func TestMinFallback(t *testing.T) {
+	err := (&MinRule[int]{min: 10}).Validate(5)
+	assert.Error(t, err)
+}
+
+func TestMaxFallback(t *testing.T) {
+	err := (&MaxRule[int]{max: 10}).Validate(15)
+	assert.Error(t, err)
+}
+
 // BenchmarkMaxRule benchmarks the performance of the Max validation rule.
 // It measures the time taken to validate an integer value against a maximum threshold.
 func BenchmarkMaxRule(b *testing.B) {

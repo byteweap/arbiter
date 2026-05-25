@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestOdd(t *testing.T) {
@@ -57,4 +59,9 @@ func TestOdd(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestOddFallback(t *testing.T) {
+	err := (&OddRule[int]{}).Validate(2)
+	assert.Error(t, err)
 }

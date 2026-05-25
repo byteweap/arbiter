@@ -2,6 +2,8 @@ package rule
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDivisibleBy(t *testing.T) {
@@ -63,4 +65,9 @@ func TestDivisibleBy(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDivisibleByFallback(t *testing.T) {
+	err := (&DivisibleByRule{divisor: 2}).Validate(3)
+	assert.Error(t, err)
 }

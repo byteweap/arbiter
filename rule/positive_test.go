@@ -29,6 +29,11 @@ func TestPositiveRule(t *testing.T) {
 	assert.Equal(t, "must be positive number", customErr.Error())
 }
 
+func TestPositiveFallback(t *testing.T) {
+	err := (&PositiveRule[int]{}).Validate(-1)
+	assert.Error(t, err)
+}
+
 func BenchmarkPositiveRule(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
