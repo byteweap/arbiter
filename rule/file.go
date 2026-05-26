@@ -49,7 +49,7 @@ const (
 //
 // Example:
 //
-//	rule := FileSize(1024, 10485760).Err("File must be between 1KB and 10MB")
+//	rule := FileSize(1024, 10485760).Errf("File must be between 1KB and 10MB")
 //	err := rule.Validate(fileReader)  // returns nil if file size is within range
 type FileSizeRule struct {
 	min int64
@@ -115,12 +115,12 @@ func (r *FileSizeRule) Validate(file io.Reader) error {
 	return nil
 }
 
-// Err sets a custom error message for file size validation failures.
+// Errf sets a custom error message for file size validation failures.
 // This allows for context-specific error messages.
 //
 // Example:
 //
-//	rule := FileSize(1024, 10485760).Err("Uploaded file must be between 1KB and 10MB")
+//	rule := FileSize(1024, 10485760).Errf("Uploaded file must be between 1KB and 10MB")
 func (r *FileSizeRule) Errf(format string, args ...any) *FileSizeRule {
 	if format != "" {
 		r.e = fmt.Errorf(format, args...)
@@ -133,7 +133,7 @@ func (r *FileSizeRule) Errf(format string, args ...any) *FileSizeRule {
 //
 // Example:
 //
-//	rule := FileType("PDF", "DOCX").Err("Only PDF and DOCX files are allowed")
+//	rule := FileType("PDF", "DOCX").Errf("Only PDF and DOCX files are allowed")
 //	err := rule.Validate(fileReader)  // returns nil if file type is allowed
 type FileTypeRule struct {
 	allowedTypes []string
@@ -207,7 +207,7 @@ func (r *FileTypeRule) Errf(format string, args ...any) *FileTypeRule {
 //
 // Example:
 //
-//	rule := FileExtension("pdf", "docx").Err("Only PDF and DOCX files are allowed")
+//	rule := FileExtension("pdf", "docx").Errf("Only PDF and DOCX files are allowed")
 //	err := rule.Validate("document.pdf")  // returns nil
 //	err = rule.Validate("image.jpg")     // returns error
 type FileExtensionRule struct {
@@ -276,7 +276,7 @@ func (r *FileExtensionRule) Errf(format string, args ...any) *FileExtensionRule 
 //
 // Example:
 //
-//	rule := FileMimeType("application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document").Err("Only PDF and DOCX files are allowed")
+//	rule := FileMimeType("application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document").Errf("Only PDF and DOCX files are allowed")
 //	err := rule.Validate(fileReader)  // returns nil if MIME type is allowed
 type FileMimeTypeRule struct {
 	allowedMimeTypes []string

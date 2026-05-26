@@ -27,7 +27,7 @@ var (
 //
 // Example:
 //
-//	rule := IP().Err("Please enter a valid IP address")
+//	rule := IP().Errf("Please enter a valid IP address")
 //	err := rule.Validate("192.168.1.1")     // returns nil
 //	err = rule.Validate("2001:db8::1")     // returns nil
 //	err = rule.Validate("invalid")         // returns error
@@ -41,7 +41,7 @@ type IPRule struct {
 // Example:
 //
 //	rule := IP()  // creates a rule that validates any IP address
-//	rule := IP().Err("Invalid IP address format")  // with custom error message
+//	rule := IP().Errf("Invalid IP address format")  // with custom error message
 func IP() *IPRule {
 	return &IPRule{
 		e: ErrIP,
@@ -90,7 +90,7 @@ func (r *IPRule) Errf(format string, args ...any) *IPRule {
 //
 // Example:
 //
-//	rule := IPv4().Err("Please enter a valid IPv4 address")
+//	rule := IPv4().Errf("Please enter a valid IPv4 address")
 //	err := rule.Validate("192.168.1.1")  // returns nil
 //	err = rule.Validate("2001:db8::1")  // returns error (not IPv4)
 //	err = rule.Validate("invalid")      // returns error
@@ -104,7 +104,7 @@ type IPv4Rule struct {
 // Example:
 //
 //	rule := IPv4()  // creates a rule that validates IPv4 addresses
-//	rule := IPv4().Err("Invalid IPv4 address format")  // with custom error message
+//	rule := IPv4().Errf("Invalid IPv4 address format")  // with custom error message
 func IPv4() *IPv4Rule {
 	return &IPv4Rule{
 		e: ErrIPv4,
@@ -154,7 +154,7 @@ func (r *IPv4Rule) Errf(format string, args ...any) *IPv4Rule {
 //
 // Example:
 //
-//	rule := IPv6().Err("Please enter a valid IPv6 address")
+//	rule := IPv6().Errf("Please enter a valid IPv6 address")
 //	err := rule.Validate("2001:db8::1")     // returns nil
 //	err = rule.Validate("192.168.1.1")     // returns error (not IPv6)
 //	err = rule.Validate("invalid")         // returns error
@@ -168,7 +168,7 @@ type IPv6Rule struct {
 // Example:
 //
 //	rule := IPv6()  // creates a rule that validates IPv6 addresses
-//	rule := IPv6().Err("Invalid IPv6 address format")  // with custom error message
+//	rule := IPv6().Errf("Invalid IPv6 address format")  // with custom error message
 func IPv6() *IPv6Rule {
 	return &IPv6Rule{
 		e: ErrIPv6,

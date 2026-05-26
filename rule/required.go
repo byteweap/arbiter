@@ -31,10 +31,10 @@ type RequiredRule[T RequiredType] struct {
 // Example:
 //
 //	// Create a rule for required string
-//	nameRule := Required[string]().Err("Name is required")
+//	nameRule := Required[string]().Errf("Name is required")
 //
 //	// Create a rule for required integer
-//	ageRule := Required[int]().Err("Age is required")
+//	ageRule := Required[int]().Errf("Age is required")
 func Required[T RequiredType]() *RequiredRule[T] {
 	return &RequiredRule[T]{}
 }

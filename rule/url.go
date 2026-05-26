@@ -17,7 +17,7 @@ var ErrURL = errors.New("invalid URL format")
 //
 // Example:
 //
-//	rule := URL().Err("Please enter a valid URL")
+//	rule := URL().Errf("Please enter a valid URL")
 //	err := rule.Validate("https://example.com")  // returns nil
 //	err = rule.Validate("not-a-url")            // returns error
 type URLRule struct {
@@ -30,7 +30,7 @@ type URLRule struct {
 // Example:
 //
 //	rule := URL()  // creates a rule that validates URLs
-//	rule := URL().Err("Invalid URL format")  // with custom error message
+//	rule := URL().Errf("Invalid URL format")  // with custom error message
 func URL() *URLRule {
 	return &URLRule{
 		e: ErrURL,

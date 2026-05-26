@@ -427,7 +427,7 @@ func (r *PasswordComplexRule) Errf(format string, args ...any) *PasswordComplexR
 //
 // Example:
 //
-//	rule := XSS().Err("Input contains potentially dangerous content")
+//	rule := XSS().Errf("Input contains potentially dangerous content")
 //	err := rule.Validate("Hello, world!")  // returns nil
 //	err = rule.Validate("<script>alert('XSS')</script>")  // returns error
 type XSSRule struct {
@@ -440,7 +440,7 @@ type XSSRule struct {
 // Example:
 //
 //	rule := XSS()  // creates a rule that checks for XSS patterns
-//	rule := XSS().Err("Input contains potentially dangerous content")  // with custom error message
+//	rule := XSS().Errf("Input contains potentially dangerous content")  // with custom error message
 func XSS() *XSSRule {
 	return &XSSRule{
 		e: ErrXSS,
@@ -512,7 +512,7 @@ type SQLInjectionRule struct {
 // Example:
 //
 //	rule := SQLInjection()  // creates a rule that checks for SQL injection patterns
-//	rule := SQLInjection().Err("Input contains potentially dangerous SQL content")  // with custom error message
+//	rule := SQLInjection().Errf("Input contains potentially dangerous SQL content")  // with custom error message
 func SQLInjection() *SQLInjectionRule {
 	return &SQLInjectionRule{
 		e: ErrSQLInjection,

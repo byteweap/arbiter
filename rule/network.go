@@ -53,7 +53,7 @@ type DomainRule struct {
 // Example:
 //
 //	domainRule := Domain()
-//	websiteRule := Domain().Err("Please enter a valid website domain")
+//	websiteRule := Domain().Errf("Please enter a valid website domain")
 func Domain() *DomainRule {
 	return &DomainRule{
 		e: ErrDomain,
@@ -327,7 +327,7 @@ func (r *SubnetMaskRule) Validate(mask string) error {
 	return nil
 }
 
-// Err sets a custom error message for subnet mask validation failures.
+// Errf sets a custom error message for subnet mask validation failures.
 // This allows for context-specific error messages.
 //
 // Example:

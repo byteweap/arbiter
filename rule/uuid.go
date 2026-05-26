@@ -99,7 +99,7 @@ func (r *UUIDRule) Validate(value string) error {
 //
 // Example:
 //
-//	rule := UUID().Err("The ID must be a valid UUID")
+//	rule := UUID().Errf("The ID must be a valid UUID")
 //	err := rule.Validate("invalid-uuid")  // returns error with custom message
 //
 //	rule = UUID().Errf("Please enter a valid UUID")

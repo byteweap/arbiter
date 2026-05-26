@@ -102,8 +102,8 @@ func (r *ConditionRule[T]) Errf(format string, args ...any) *ConditionRule[T] {
 //
 // Example:
 //
-//	rule := Dependency("age", "isAdult", GreaterThan(18), func(p Person) int { return p.Age })
-//	err := rule.Validate(person)  // returns nil if age > 18
+//	rule := Dependency("age", "isAdult", Min(18), func(p Person) int { return p.Age })
+//	err := rule.Validate(person)  // returns nil if age >= 18
 type DependencyRule[T any, D any] struct {
 	e           error
 	field       string
@@ -120,7 +120,7 @@ type DependencyRule[T any, D any] struct {
 //
 // Example:
 //
-//	rule := Dependency("age", "isAdult", GreaterThan(18), func(p Person) int { return p.Age })
+//	rule := Dependency("age", "isAdult", Min(18), func(p Person) int { return p.Age })
 func Dependency[T, D any](field, dependency string, validator Rule[D], valueGetter func(T) D) *DependencyRule[T, D] {
 	return &DependencyRule[T, D]{
 		e:           ErrDependency,
@@ -161,9 +161,8 @@ func (r *DependencyRule[T, D]) Errf(format string, args ...any) *DependencyRule[
 	return r
 }
 
-// MutualExcludeRule represents a rule that validates mutual exclusion between fields.
-// It ensures that only one of the specified fields can have a value that matches
-// the given values.
+// MutualExcludeRule validates that a value matches one of the specified values.
+// It is typically used to check if a field's value belongs to a mutually exclusive set.
 //
 // Example:
 //

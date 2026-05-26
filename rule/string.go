@@ -89,10 +89,10 @@ type StartWithRule struct {
 // Example:
 //
 //	// Create a rule for URLs starting with https://
-//	urlRule := StartWith("https://").Err("URL must start with https://")
+//	urlRule := StartWith("https://").Errf("URL must start with https://")
 //
 //	// Create a rule for file paths
-//	pathRule := StartWith("/home/").Err("Path must be absolute")
+//	pathRule := StartWith("/home/").Errf("Path must be absolute")
 func StartWith(prefix string) *StartWithRule {
 	return &StartWithRule{
 		prefix: prefix,
@@ -151,10 +151,10 @@ type EndWithRule struct {
 // Example:
 //
 //	// Create a rule for Go source files
-//	goFileRule := EndWith(".go").Err("File must be a Go source file")
+//	goFileRule := EndWith(".go").Errf("File must be a Go source file")
 //
 //	// Create a rule for domain names
-//	domainRule := EndWith(".com").Err("Domain must end with .com")
+//	domainRule := EndWith(".com").Errf("Domain must end with .com")
 func EndWith(suffix string) *EndWithRule {
 	return &EndWithRule{
 		suffix: suffix,
@@ -212,7 +212,7 @@ type ChineseOnlyRule struct {
 // Example:
 //
 //	// Create a rule for Chinese names
-//	nameRule := ChineseOnly().Err("Name must contain only Chinese characters")
+//	nameRule := ChineseOnly().Errf("Name must contain only Chinese characters")
 func OnlyChinese() *ChineseOnlyRule {
 	return &ChineseOnlyRule{
 		e: ErrChineseOnly,
@@ -271,7 +271,7 @@ type FullWidthRule struct {
 // Example:
 //
 //	// Create a rule for full-width text
-//	textRule := FullWidthOnly().Err("Text must be in full-width format")
+//	textRule := FullWidthOnly().Errf("Text must be in full-width format")
 func OnlyFullWidth() *FullWidthRule {
 	return &FullWidthRule{
 		e: ErrFullWidthOnly,
@@ -330,7 +330,7 @@ type HalfWidthRule struct {
 // Example:
 //
 //	// Create a rule for ASCII text
-//	textRule := HalfWidthOnly().Err("Text must be in half-width format")
+//	textRule := HalfWidthOnly().Errf("Text must be in half-width format")
 func OnlyHalfWidth() *HalfWidthRule {
 	return &HalfWidthRule{
 		e: ErrHalfWidthOnly,
@@ -389,7 +389,7 @@ type UpperCaseRule struct {
 // Example:
 //
 //	// Create a rule for uppercase codes
-//	codeRule := OnlyUpperCase().Err("Code must be in uppercase")
+//	codeRule := OnlyUpperCase().Errf("Code must be in uppercase")
 func OnlyUpperCase() *UpperCaseRule {
 	return &UpperCaseRule{
 		e: ErrUpperCaseOnly,
@@ -449,7 +449,7 @@ type LowerCaseRule struct {
 // Example:
 //
 //	// Create a rule for lowercase usernames
-//	usernameRule := OnlyLowerCase().Err("Username must be in lowercase")
+//	usernameRule := OnlyLowerCase().Errf("Username must be in lowercase")
 func OnlyLowerCase() *LowerCaseRule {
 	return &LowerCaseRule{
 		e: ErrLowerCaseOnly,
@@ -511,10 +511,10 @@ type SpecialCharsRule struct {
 // Example:
 //
 //	// Create a rule that allows special characters
-//	passwordRule := SpecialChars(true).Err("Password must contain special characters")
+//	passwordRule := SpecialChars(true).Errf("Password must contain special characters")
 //
 //	// Create a rule that prohibits special characters
-//	usernameRule := SpecialChars(false).Err("Username must not contain special characters")
+//	usernameRule := SpecialChars(false).Errf("Username must not contain special characters")
 func SpecialChars(allowSpecial bool) *SpecialCharsRule {
 	var e error
 	if allowSpecial {
@@ -596,7 +596,7 @@ type ContainsRule struct {
 // Example:
 //
 //	// Create a rule for required words
-//	wordRule := Contains("important").Err("Text must contain the word 'important'")
+//	wordRule := Contains("important").Errf("Text must contain the word 'important'")
 func Contains(substring string) *ContainsRule {
 	return &ContainsRule{
 		substring: substring,
@@ -655,7 +655,7 @@ type NotContainsRule struct {
 // Example:
 //
 //	// Create a rule for prohibited words
-//	wordRule := NotContains("bad").Err("Text must not contain the word 'bad'")
+//	wordRule := NotContains("bad").Errf("Text must not contain the word 'bad'")
 func NotContains(substring string) *NotContainsRule {
 	return &NotContainsRule{
 		substring: substring,

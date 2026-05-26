@@ -51,7 +51,7 @@ var (
 //
 //	start := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
 //	end := time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC)
-//	rule := TimeBetween(start, end).Err("Date must be in 2023")
+//	rule := TimeBetween(start, end).Errf("Date must be in 2023")
 //	err := rule.Validate(time.Now())  // returns nil if current time is in 2023
 type TimeBetweenRule struct {
 	start time.Time
@@ -413,7 +413,7 @@ func (r *TimeFormatRule) Errf(format string, args ...any) *TimeFormatRule {
 //
 // Example:
 //
-//	rule := DateTimeFormat("2006-01-02 15:04:05").Err("DateTime must be in YYYY-MM-DD HH:MM:SS format")
+//	rule := DateTimeFormat("2006-01-02 15:04:05").Errf("DateTime must be in YYYY-MM-DD HH:MM:SS format")
 //	err := rule.Validate("2023-12-31 14:30:00")  // returns nil
 //	err = rule.Validate("12/31/2023 2:30 PM")  // returns error
 type DateTimeFormatRule struct {
@@ -531,7 +531,7 @@ func (r *WeekendRule) Errf(format string, args ...any) *WeekendRule {
 //
 // Example:
 //
-//	rule := Workday().Err("Appointment must be on a workday")
+//	rule := Workday().Errf("Appointment must be on a workday")
 //	err := rule.Validate(time.Date(2023, 12, 29, 0, 0, 0, 0, time.UTC))  // returns nil (Friday)
 //	err = rule.Validate(time.Date(2023, 12, 30, 0, 0, 0, 0, time.UTC))  // returns error (Saturday)
 type WorkdayRule struct {

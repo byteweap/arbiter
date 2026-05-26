@@ -17,7 +17,7 @@ import (
 //	// Validate a string with multiple rules
 //	err := Validate("hello",
 //	    rule.Length(3, 10),           // length between 3 and 10
-//	    rule.String().Err("Invalid"), // custom error message
+//	    rule.String().Errf("Invalid"), // custom error message
 //	)
 //
 //	// Validate a number with multiple rules
@@ -48,7 +48,7 @@ func Validate[T any](value T, rules ...rule.Rule[T]) error {
 //
 //	errs := ValidateWithErrs("hello",
 //	    rule.Length(3, 10),           // length between 3 and 10
-//	    rule.String().Err("Invalid"), // custom error message
+//	    rule.String().Errf("Invalid"), // custom error message
 //	)
 func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
 	var errs []error
@@ -82,7 +82,7 @@ func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
 //	err := ValidateStruct(person, "Person cannot be nil",
 //	    rule.Field("Name", person.Name,
 //	        rule.Length(2, 50),
-//	        rule.String().Err("Name is required"),
+//	        rule.String().Errf("Name is required"),
 //	    ),
 //	    rule.Field("Age", person.Age,
 //	        rule.Min(0),
@@ -90,7 +90,7 @@ func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
 //	    ),
 //	    rule.Field("Email", person.Email,
 //	        rule.Email(),
-//	        rule.String().Err("Invalid email"),
+//	        rule.String().Errf("Invalid email"),
 //	    ),
 //	)
 func ValidateStruct(value any, nilErr string, fields ...IFieldRule) error {

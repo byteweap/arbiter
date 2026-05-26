@@ -34,10 +34,10 @@ type ZeroRule[T Zeroable] struct {
 // Example:
 //
 //	// Create a rule for zero integers
-//	countRule := Zero[int]().Err("Count must be zero")
+//	countRule := Zero[int]().Errf("Count must be zero")
 //
 //	// Create a rule for empty strings
-//	nameRule := Zero[string]().Err("Name must be empty")
+//	nameRule := Zero[string]().Errf("Name must be empty")
 func Zero[T Zeroable]() *ZeroRule[T] {
 	return &ZeroRule[T]{
 		e: ErrZero,

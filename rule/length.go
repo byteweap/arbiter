@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 )
 
-// ErrLength is returned when a value's length is outside the specified range.
+// ErrLengthFormat is the format string for length validation errors.
 const ErrLengthFormat = "length is not between %v and %v"
 
 // LengthRule validates that a value's length falls within a specified range.
@@ -34,10 +34,10 @@ type LengthRule[T any] struct {
 // Example:
 //
 //	// Create a rule for usernames (5-20 characters)
-//	usernameRule := Len[string](5, 20).Err("Username must be 5-20 characters long")
+//	usernameRule := Len[string](5, 20).Errf("Username must be 5-20 characters long")
 //
 //	// Create a rule for arrays (1-5 elements)
-//	arrayRule := Len[[]int](1, 5).Err("Array must have 1-5 elements")
+//	arrayRule := Len[[]int](1, 5).Errf("Array must have 1-5 elements")
 func Len[T any](min, max int) *LengthRule[T] {
 	return &LengthRule[T]{min: min, max: max, e: fmt.Errorf(ErrLengthFormat, min, max)}
 }

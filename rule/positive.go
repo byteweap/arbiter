@@ -32,10 +32,10 @@ type PositiveRule[T Ordered] struct {
 // Example:
 //
 //	// Create a rule for positive integers
-//	ageRule := Positive[int]().Err("Age must be positive")
+//	ageRule := Positive[int]().Errf("Age must be positive")
 //
 //	// Create a rule for positive floating-point numbers
-//	priceRule := Positive[float64]().Err("Price must be positive")
+//	priceRule := Positive[float64]().Errf("Price must be positive")
 func Positive[T Ordered]() *PositiveRule[T] {
 	return &PositiveRule[T]{
 		e: ErrPositive,
