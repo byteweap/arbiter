@@ -169,7 +169,7 @@ nameRule := rule.Field(&person.Name,
 ### 1. Error Handling
 
 ```go
-// Collect all validation errors
+// Stop at first error
 err := Validate(value,
     rule1,
     rule2,
