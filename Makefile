@@ -17,6 +17,7 @@ coverage-html:
 release:
 	@VERSION="$(word 2,$(MAKECMDGOALS))"; \
 	if [ -z "$$VERSION" ]; then echo "Usage: make release v1.0.1"; exit 1; fi; \
+	if ! echo "$$VERSION" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$$'; then echo "Error: Invalid version format. Must be v0.0.0 (e.g., v1.0.1)"; exit 1; fi; \
 	if git rev-parse "$$VERSION" >/dev/null 2>&1; then echo "Error: Tag $$VERSION already exists"; exit 1; fi; \
 	git tag -a $$VERSION -m "Release $$VERSION"; \
 	git push origin master --tags; \
