@@ -106,7 +106,6 @@ func NonZero[T any]() *NonZeroRule[T] {
 //
 //nolint:gocyclo,gocognit // type dispatch for all Go types is inherently complex
 func (r *NonZeroRule[T]) Validate(value T) error {
-
 	// Get reflection value
 	v := reflect.ValueOf(value)
 

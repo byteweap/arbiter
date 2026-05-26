@@ -266,7 +266,6 @@ func BenchmarkInRule(b *testing.B) {
 }
 
 func BenchmarkNotInRule(b *testing.B) {
-
 	b.ReportAllocs()
 	b.ResetTimer()
 

@@ -66,6 +66,7 @@ type NilRule[T any] struct {
 //	// Check if a channel is not nil
 //	ch := make(chan int)
 //	err = NotNil.Validate(ch)  // returns nil (ch is not nil)
+//
 //nolint:gocyclo // type dispatch for all Go types is inherently complex
 func (r *NilRule[T]) Validate(value T) error {
 	var isNil bool

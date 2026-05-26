@@ -33,7 +33,6 @@ func TestDomain(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestDomainBoundary(t *testing.T) {

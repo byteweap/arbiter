@@ -107,7 +107,6 @@ func TestLengthRule(t *testing.T) {
 	}
 	err = Len[[]Test](1, 10).Validate(arr)
 	assert.Nil(t, err)
-
 }
 
 func TestLengthRuleErrf(t *testing.T) {
@@ -117,7 +116,6 @@ func TestLengthRuleErrf(t *testing.T) {
 }
 
 func BenchmarkLengthRule(b *testing.B) {
-
 	b.ReportAllocs()
 	b.ResetTimer()
 

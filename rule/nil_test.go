@@ -18,7 +18,6 @@ func TestNilRule(t *testing.T) {
 	var v *string
 	err = Nil.Validate(v)
 	assert.Equal(t, nil, err)
-
 }
 
 func TestNilRuleErrf(t *testing.T) {
