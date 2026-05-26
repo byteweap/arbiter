@@ -118,11 +118,8 @@ func TestLengthRuleErrf(t *testing.T) {
 func BenchmarkLengthRule(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
-
 		_ = Len[string](1, 10).Validate("哈")
-
 		// str := "hello"
 		// Len[*string](1, 10).Validate(&str)
 

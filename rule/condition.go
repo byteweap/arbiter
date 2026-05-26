@@ -121,11 +121,7 @@ type DependencyRule[T any, D any] struct {
 // Example:
 //
 //	rule := Dependency("age", "isAdult", GreaterThan(18), func(p Person) int { return p.Age })
-func Dependency[T any, D any](
-	field, dependency string,
-	validator Rule[D],
-	valueGetter func(T) D,
-) *DependencyRule[T, D] {
+func Dependency[T any, D any](field, dependency string, validator Rule[D], valueGetter func(T) D) *DependencyRule[T, D] {
 	return &DependencyRule[T, D]{
 		e:           ErrDependency,
 		field:       field,
