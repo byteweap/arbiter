@@ -92,7 +92,7 @@ func TestFileType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpFile := filepath.Join(tmpDir, "test")
-			err := os.WriteFile(tmpFile, tt.content, 0644)
+			err := os.WriteFile(tmpFile, tt.content, 0o644)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -192,7 +192,7 @@ func TestFileMimeType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpFile := filepath.Join(tmpDir, "test"+tt.extension)
-			err := os.WriteFile(tmpFile, tt.content, 0644)
+			err := os.WriteFile(tmpFile, tt.content, 0o644)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -251,7 +251,7 @@ func TestFileSizeErrf(t *testing.T) {
 func TestFileTypeErrf(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := tmpDir + "/test"
-	if err := os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644); err != nil {
+	if err := os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	f, _ := os.Open(tmpFile)
@@ -273,7 +273,7 @@ func TestFileExtensionErrf(t *testing.T) {
 func TestFileMimeTypeErrf(t *testing.T) {
 	tmpDir := t.TempDir()
 	tmpFile := tmpDir + "/test.png"
-	if err := os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0644); err != nil {
+	if err := os.WriteFile(tmpFile, []byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	f, _ := os.Open(tmpFile)
