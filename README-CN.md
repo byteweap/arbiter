@@ -13,7 +13,7 @@
 
 一个强大而灵活的 Go 数据验证框架。
 
-[English](README.md) | 简体中文 | [更新日志](CHANGELOG-CN.md)
+[English](README.md) | 简体中文
 
 ## 概述
 
