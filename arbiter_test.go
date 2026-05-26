@@ -57,19 +57,19 @@ func TestValidate(t *testing.T) {
 	// Test multiple rules
 	t.Run("multiple rules", func(t *testing.T) {
 		// Valid value (passes all rules)
-		err := arbiter.Validate("example.com", rule.Domain(), rule.OnlyHalfWidth())
+		err := arbiter.Validate("example.com", rule.Domain(), rule.HalfWidthOnly())
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
 
 		// Invalid value (fails first rule)
-		err = arbiter.Validate("invalid", rule.Domain(), rule.OnlyHalfWidth())
+		err = arbiter.Validate("invalid", rule.Domain(), rule.HalfWidthOnly())
 		if err == nil {
 			t.Error("Expected error for invalid domain, got nil")
 		}
 
 		// Invalid value (fails second rule)
-		err = arbiter.Validate("Ｈｅｌｌｏ", rule.Domain(), rule.OnlyHalfWidth())
+		err = arbiter.Validate("Ｈｅｌｌｏ", rule.Domain(), rule.HalfWidthOnly())
 		if err == nil {
 			t.Error("Expected error for full-width characters, got nil")
 		}
@@ -174,7 +174,7 @@ func TestValidateStruct(t *testing.T) {
 		}
 
 		err := arbiter.ValidateStruct(person, "Person cannot be nil",
-			arbiter.Field(&person.Name, rule.OnlyHalfWidth()),
+			arbiter.Field(&person.Name, rule.HalfWidthOnly()),
 			arbiter.Field(&person.Age, rule.Min[int](0), rule.Max[int](120)),
 			arbiter.Field(&person.Website, rule.Domain()),
 			arbiter.Field(&person.Password, rule.PasswordStrength()),
@@ -202,7 +202,7 @@ func TestValidateStruct(t *testing.T) {
 		}
 
 		err := arbiter.ValidateStruct(person, "Person cannot be nil",
-			arbiter.Field(&person.Name, rule.OnlyHalfWidth()),
+			arbiter.Field(&person.Name, rule.HalfWidthOnly()),
 		)
 		if err == nil {
 			t.Error("Expected error for non-pointer struct, got nil")
@@ -219,7 +219,7 @@ func TestValidateStruct(t *testing.T) {
 		}
 
 		err := arbiter.ValidateStruct(person, "Person cannot be nil",
-			arbiter.Field(&person.Name, rule.OnlyHalfWidth()),
+			arbiter.Field(&person.Name, rule.HalfWidthOnly()),
 			arbiter.Field(&person.Age, rule.Min[int](0), rule.Max[int](120)),
 			arbiter.Field(&person.Website, rule.Domain()),
 			arbiter.Field(&person.Password, rule.PasswordStrength()),

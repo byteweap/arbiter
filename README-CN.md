@@ -121,11 +121,11 @@ nameRule := rule.Field(&person.Name,
 #### 字符串规则
 - `StartWith`: 验证字符串前缀
 - `EndWith`: 验证字符串后缀
-- `OnlyChinese`: 验证中文字符
-- `OnlyFullWidth`: 验证全角字符
-- `OnlyHalfWidth`: 验证半角字符
-- `OnlyUpperCase`: 验证大写字母
-- `OnlyLowerCase`: 验证小写字母
+- `ChineseOnly`: 验证中文字符
+- `FullWidthOnly`: 验证全角字符
+- `HalfWidthOnly`: 验证半角字符
+- `UpperCaseOnly`: 验证大写字母
+- `LowerCaseOnly`: 验证小写字母
 - `SpecialChars`: 验证特殊字符
 - `Contains`: 验证子串存在
 - `NotContains`: 验证子串不存在

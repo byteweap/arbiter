@@ -27,7 +27,7 @@ func TestFieldValid(t *testing.T) {
 	}
 
 	err := arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Username, rule.OnlyHalfWidth()),
+		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid username, got %v", err)
@@ -55,18 +55,18 @@ func TestFieldValid(t *testing.T) {
 	}
 
 	err = arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Chinese, rule.OnlyChinese()),
+		arbiter.Field(&user.Chinese, rule.ChineseOnly()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid Chinese text, got %v", err)
 	}
 
 	err = arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Username, rule.OnlyHalfWidth()),
+		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 		arbiter.Field(&user.Age, rule.Min[int](0), rule.Max[int](120)),
 		arbiter.Field(&user.Website, rule.Domain()),
 		arbiter.Field(&user.Password, rule.PasswordStrength()),
-		arbiter.Field(&user.Chinese, rule.OnlyChinese()),
+		arbiter.Field(&user.Chinese, rule.ChineseOnly()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid user, got %v", err)
@@ -83,7 +83,7 @@ func TestFieldInvalid(t *testing.T) {
 	}
 
 	err := arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Username, rule.OnlyHalfWidth()),
+		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 	)
 	if err == nil {
 		t.Error("Expected error for full-width username, got nil")
@@ -111,18 +111,18 @@ func TestFieldInvalid(t *testing.T) {
 	}
 
 	err = arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Chinese, rule.OnlyChinese()),
+		arbiter.Field(&user.Chinese, rule.ChineseOnly()),
 	)
 	if err == nil {
 		t.Error("Expected error for non-Chinese text, got nil")
 	}
 
 	err = arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Username, rule.OnlyHalfWidth()),
+		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 		arbiter.Field(&user.Age, rule.Min(0), rule.Max(120)),
 		arbiter.Field(&user.Website, rule.Domain()),
 		arbiter.Field(&user.Password, rule.PasswordStrength()),
-		arbiter.Field(&user.Chinese, rule.OnlyChinese()),
+		arbiter.Field(&user.Chinese, rule.ChineseOnly()),
 	)
 	if err == nil {
 		t.Error("Expected error for invalid user, got nil")
@@ -143,8 +143,8 @@ func TestFieldMultipleRules(t *testing.T) {
 
 	err := arbiter.ValidateStruct(user, "User cannot be nil",
 		arbiter.Field(&user.Username,
-			rule.OnlyHalfWidth(),
-			rule.OnlyLowerCase(),
+			rule.HalfWidthOnly(),
+			rule.LowerCaseOnly(),
 		),
 	)
 	if err != nil {
@@ -154,8 +154,8 @@ func TestFieldMultipleRules(t *testing.T) {
 	user.Username = "JOHN123"
 	err = arbiter.ValidateStruct(user, "User cannot be nil",
 		arbiter.Field(&user.Username,
-			rule.OnlyHalfWidth(),
-			rule.OnlyLowerCase(),
+			rule.HalfWidthOnly(),
+			rule.LowerCaseOnly(),
 		),
 	)
 	if err == nil {

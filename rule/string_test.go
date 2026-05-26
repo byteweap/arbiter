@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStringStartsWith(t *testing.T) {
@@ -115,7 +116,7 @@ func TestStringEndsWith(t *testing.T) {
 			}
 
 			err := rule.Validate(tt.value)
-			if err != tt.expected {
+			if !errors.Is(err, tt.expected) {
 				if err == nil || tt.expected == nil || err.Error() != tt.expected.Error() {
 					t.Errorf("EndsWith(%q).Validate(%q) = %v, want %v", tt.suffix, tt.value, err, tt.expected)
 				}
@@ -242,7 +243,7 @@ func TestChineseOnly(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rule := OnlyChinese()
+			rule := ChineseOnly()
 			err := rule.Validate(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ChineseOnly() error = %v, wantErr %v", err, tt.wantErr)
@@ -276,7 +277,7 @@ func TestFullWidthOnly(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rule := OnlyFullWidth()
+			rule := FullWidthOnly()
 			err := rule.Validate(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FullWidthOnly() error = %v, wantErr %v", err, tt.wantErr)
@@ -310,7 +311,7 @@ func TestHalfWidthOnly(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rule := OnlyHalfWidth()
+			rule := HalfWidthOnly()
 			err := rule.Validate(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("HalfWidthOnly() error = %v, wantErr %v", err, tt.wantErr)
@@ -344,7 +345,7 @@ func TestUpperCaseOnly(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rule := OnlyUpperCase()
+			rule := UpperCaseOnly()
 			err := rule.Validate(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UpperCaseOnly() error = %v, wantErr %v", err, tt.wantErr)
@@ -378,7 +379,7 @@ func TestLowerCaseOnly(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rule := OnlyLowerCase()
+			rule := LowerCaseOnly()
 			err := rule.Validate(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("LowerCaseOnly() error = %v, wantErr %v", err, tt.wantErr)
@@ -526,66 +527,66 @@ func TestNotContains(t *testing.T) {
 }
 
 func TestFullWidthExtensionB(t *testing.T) {
-	assert.Nil(t, OnlyFullWidth().Validate("𠮷"))
-	assert.Nil(t, OnlyFullWidth().Validate("ＨＥＬＬＯ。"))
-	assert.Nil(t, OnlyFullWidth().Validate("가"))
-	assert.Nil(t, OnlyFullWidth().Validate("￠"))
-	assert.Nil(t, OnlyFullWidth().Validate("\u3000")) // ideographic space
-	assert.Nil(t, OnlyFullWidth().Validate("\u2F00")) // Kangxi radical
-	assert.Nil(t, OnlyFullWidth().Validate("\uF900")) // CJK compatibility
-	assert.Nil(t, OnlyFullWidth().Validate("\uFE30")) // CJK compatibility forms
+	assert.Nil(t, FullWidthOnly().Validate("𠮷"))
+	assert.Nil(t, FullWidthOnly().Validate("ＨＥＬＬＯ。"))
+	assert.Nil(t, FullWidthOnly().Validate("가"))
+	assert.Nil(t, FullWidthOnly().Validate("￠"))
+	assert.Nil(t, FullWidthOnly().Validate("\u3000")) // ideographic space
+	assert.Nil(t, FullWidthOnly().Validate("\u2F00")) // Kangxi radical
+	assert.Nil(t, FullWidthOnly().Validate("\uF900")) // CJK compatibility
+	assert.Nil(t, FullWidthOnly().Validate("\uFE30")) // CJK compatibility forms
 }
 
 func TestHalfWidthKatakana(t *testing.T) {
-	assert.Nil(t, OnlyHalfWidth().Validate("ｶﾀｶﾅ"))
-	assert.Nil(t, OnlyHalfWidth().Validate("helloｶﾀｶﾅ"))
+	assert.Nil(t, HalfWidthOnly().Validate("ｶﾀｶﾅ"))
+	assert.Nil(t, HalfWidthOnly().Validate("helloｶﾀｶﾅ"))
 }
 
 func TestChineseOnlyErrf(t *testing.T) {
-	err := OnlyChinese().Errf("custom chinese error").Validate("你好world")
-	assert.Error(t, err)
+	err := ChineseOnly().Errf("custom chinese error").Validate("你好world")
+	require.Error(t, err)
 	assert.Equal(t, "custom chinese error", err.Error())
 }
 
 func TestFullWidthOnlyErrf(t *testing.T) {
-	err := OnlyFullWidth().Errf("custom fullwidth error").Validate("ＨＥＬＬＯ world")
-	assert.Error(t, err)
+	err := FullWidthOnly().Errf("custom fullwidth error").Validate("ＨＥＬＬＯ world")
+	require.Error(t, err)
 	assert.Equal(t, "custom fullwidth error", err.Error())
 }
 
 func TestHalfWidthOnlyErrf(t *testing.T) {
-	err := OnlyHalfWidth().Errf("custom halfwidth error").Validate("hello ＷＯＲＬＤ")
-	assert.Error(t, err)
+	err := HalfWidthOnly().Errf("custom halfwidth error").Validate("hello ＷＯＲＬＤ")
+	require.Error(t, err)
 	assert.Equal(t, "custom halfwidth error", err.Error())
 }
 
 func TestUpperCaseOnlyErrf(t *testing.T) {
-	err := OnlyUpperCase().Errf("custom upper error").Validate("HELLO world")
-	assert.Error(t, err)
+	err := UpperCaseOnly().Errf("custom upper error").Validate("HELLO world")
+	require.Error(t, err)
 	assert.Equal(t, "custom upper error", err.Error())
 }
 
 func TestLowerCaseOnlyErrf(t *testing.T) {
-	err := OnlyLowerCase().Errf("custom lower error").Validate("hello WORLD")
-	assert.Error(t, err)
+	err := LowerCaseOnly().Errf("custom lower error").Validate("hello WORLD")
+	require.Error(t, err)
 	assert.Equal(t, "custom lower error", err.Error())
 }
 
 func TestSpecialCharsErrf(t *testing.T) {
 	err := SpecialChars(true).Errf("custom special error").Validate("hello")
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "custom special error", err.Error())
 }
 
 func TestContainsErrf(t *testing.T) {
 	err := Contains("foo").Errf("custom contains error").Validate("hello world")
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "custom contains error", err.Error())
 }
 
 func TestNotContainsErrf(t *testing.T) {
 	err := NotContains("world").Errf("custom notcontains error").Validate("hello world")
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "custom notcontains error", err.Error())
 }
 

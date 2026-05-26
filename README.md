@@ -119,11 +119,11 @@ nameRule := rule.Field(&person.Name,
 #### String Rules
 - `StartWith`: Validate string prefix
 - `EndWith`: Validate string suffix
-- `OnlyChinese`: Validate Chinese characters
-- `OnlyFullWidth`: Validate full-width characters
-- `OnlyHalfWidth`: Validate half-width characters
-- `OnlyUpperCase`: Validate uppercase letters
-- `OnlyLowerCase`: Validate lowercase letters
+- `ChineseOnly`: Validate Chinese characters
+- `FullWidthOnly`: Validate full-width characters
+- `HalfWidthOnly`: Validate half-width characters
+- `UpperCaseOnly`: Validate uppercase letters
+- `LowerCaseOnly`: Validate lowercase letters
 - `SpecialChars`: Validate special characters
 - `Contains`: Validate substring presence
 - `NotContains`: Validate substring absence

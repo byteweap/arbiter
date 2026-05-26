@@ -213,7 +213,7 @@ type ChineseOnlyRule struct {
 //
 //	// Create a rule for Chinese names
 //	nameRule := ChineseOnly().Errf("Name must contain only Chinese characters")
-func OnlyChinese() *ChineseOnlyRule {
+func ChineseOnly() *ChineseOnlyRule {
 	return &ChineseOnlyRule{
 		e: ErrChineseOnly,
 	}
@@ -272,7 +272,7 @@ type FullWidthRule struct {
 //
 //	// Create a rule for full-width text
 //	textRule := FullWidthOnly().Errf("Text must be in full-width format")
-func OnlyFullWidth() *FullWidthRule {
+func FullWidthOnly() *FullWidthRule {
 	return &FullWidthRule{
 		e: ErrFullWidthOnly,
 	}
@@ -331,7 +331,7 @@ type HalfWidthRule struct {
 //
 //	// Create a rule for ASCII text
 //	textRule := HalfWidthOnly().Errf("Text must be in half-width format")
-func OnlyHalfWidth() *HalfWidthRule {
+func HalfWidthOnly() *HalfWidthRule {
 	return &HalfWidthRule{
 		e: ErrHalfWidthOnly,
 	}
@@ -376,21 +376,21 @@ func (r *HalfWidthRule) Errf(format string, args ...any) *HalfWidthRule {
 //
 // Example:
 //
-//	rule := OnlyUpperCase()
+//	rule := UpperCaseOnly()
 //	err := rule.Validate("HELLO")  // returns nil
 //	err = rule.Validate("Hello")   // returns ErrUpperCaseOnly
 type UpperCaseRule struct {
 	e error
 }
 
-// OnlyUpperCase creates a new uppercase letters validation rule.
+// UpperCaseOnly creates a new uppercase letters validation rule.
 // The rule checks if a string contains only uppercase letters.
 //
 // Example:
 //
 //	// Create a rule for uppercase codes
-//	codeRule := OnlyUpperCase().Errf("Code must be in uppercase")
-func OnlyUpperCase() *UpperCaseRule {
+//	codeRule := UpperCaseOnly().Errf("Code must be in uppercase")
+func UpperCaseOnly() *UpperCaseRule {
 	return &UpperCaseRule{
 		e: ErrUpperCaseOnly,
 	}
@@ -402,7 +402,7 @@ func OnlyUpperCase() *UpperCaseRule {
 //
 // Example:
 //
-//	rule := OnlyUpperCase()
+//	rule := UpperCaseOnly()
 //	if err := rule.Validate("HELLO"); err != nil {
 //	    // Handle validation error
 //	}
@@ -423,7 +423,7 @@ func (r *UpperCaseRule) Validate(value string) error {
 //
 // Example:
 //
-//	rule := OnlyUpperCase().Errf("Please use uppercase letters only")
+//	rule := UpperCaseOnly().Errf("Please use uppercase letters only")
 //	err := rule.Validate("Hello")  // returns error with custom message
 func (r *UpperCaseRule) Errf(format string, args ...any) *UpperCaseRule {
 	if format != "" {
@@ -436,21 +436,21 @@ func (r *UpperCaseRule) Errf(format string, args ...any) *UpperCaseRule {
 //
 // Example:
 //
-//	rule := OnlyLowerCase()
+//	rule := LowerCaseOnly()
 //	err := rule.Validate("hello")  // returns nil
 //	err = rule.Validate("Hello")   // returns ErrLowerCaseOnly
 type LowerCaseRule struct {
 	e error
 }
 
-// OnlyLowerCase creates a new lowercase letters validation rule.
+// LowerCaseOnly creates a new lowercase letters validation rule.
 // The rule checks if a string contains only lowercase letters.
 //
 // Example:
 //
 //	// Create a rule for lowercase usernames
-//	usernameRule := OnlyLowerCase().Errf("Username must be in lowercase")
-func OnlyLowerCase() *LowerCaseRule {
+//	usernameRule := LowerCaseOnly().Errf("Username must be in lowercase")
+func LowerCaseOnly() *LowerCaseRule {
 	return &LowerCaseRule{
 		e: ErrLowerCaseOnly,
 	}
@@ -462,7 +462,7 @@ func OnlyLowerCase() *LowerCaseRule {
 //
 // Example:
 //
-//	rule := OnlyLowerCase()
+//	rule := LowerCaseOnly()
 //	if err := rule.Validate("hello"); err != nil {
 //	    // Handle validation error
 //	}
@@ -483,7 +483,7 @@ func (r *LowerCaseRule) Validate(value string) error {
 //
 // Example:
 //
-//	rule := OnlyLowerCase().Errf("Please use lowercase letters only")
+//	rule := LowerCaseOnly().Errf("Please use lowercase letters only")
 //	err := rule.Validate("Hello")  // returns error with custom message
 func (r *LowerCaseRule) Errf(format string, args ...any) *LowerCaseRule {
 	if format != "" {
