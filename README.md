@@ -14,7 +14,7 @@
 
 A powerful and flexible data validation framework for Go.
 
-English | [简体中文](README-CN.md)
+English | [简体中文](README-CN.md) | [Changelog](CHANGELOG.md)
 
 ## Overview
 
