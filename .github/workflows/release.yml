@@ -30,10 +30,14 @@ jobs:
         run: go test ./...
 
       - name: Generate Release Notes
-        id: notes
         run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           echo "## Changes" > notes.md
-          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s (%h)" >> notes.md
+          if [ -z "$PREV_TAG" ]; then
+            git log --pretty=format:"- %s (%h)" >> notes.md
+          else
+            git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" >> notes.md
+          fi
         shell: bash
 
       - name: Create GitHub Release
