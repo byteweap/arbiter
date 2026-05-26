@@ -41,16 +41,16 @@ func Validate[T any](value T, rules ...rule.Rule[T]) error {
 	return nil
 }
 
-// ValidateWithErrs applies a series of validation rules to a value and returns a list of errors.
+// ValidateAll applies a series of validation rules to a value and returns a list of errors.
 // It returns nil if all rules pass.
 //
 // Example:
 //
-//	errs := ValidateWithErrs("hello",
+//	errs := ValidateAll("hello",
 //	    rule.Length(3, 10),           // length between 3 and 10
 //	    rule.String().Errf("Invalid"), // custom error message
 //	)
-func ValidateWithErrs[T any](value T, rules ...rule.Rule[T]) []error {
+func ValidateAll[T any](value T, rules ...rule.Rule[T]) []error {
 	var errs []error
 	for _, r := range rules {
 		if err := r.Validate(value); err != nil {

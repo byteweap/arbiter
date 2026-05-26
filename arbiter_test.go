@@ -76,6 +76,83 @@ func TestValidate(t *testing.T) {
 	})
 }
 
+// TestValidateAll tests the ValidateAll function with various types and rules.
+// It verifies that the function collects all validation errors instead of stopping at the first one.
+func TestValidateAll(t *testing.T) {
+	// Test all rules pass
+	t.Run("all rules pass", func(t *testing.T) {
+		errs := arbiter.ValidateAll("hello", rule.Len[string](3, 10))
+		if len(errs) != 0 {
+			t.Errorf("Expected no errors, got %d: %v", len(errs), errs)
+		}
+	})
+
+	// Test single rule fails
+	t.Run("single rule fails", func(t *testing.T) {
+		errs := arbiter.ValidateAll("hi", rule.Len[string](3, 10))
+		if len(errs) != 1 {
+			t.Errorf("Expected 1 error, got %d", len(errs))
+		}
+	})
+
+	// Test no rules
+	t.Run("no rules", func(t *testing.T) {
+		errs := arbiter.ValidateAll("hello")
+		if len(errs) != 0 {
+			t.Errorf("Expected no errors, got %d", len(errs))
+		}
+	})
+}
+
+// TestValidateAllMultipleErrors tests that ValidateAll collects multiple errors.
+func TestValidateAllMultipleErrors(t *testing.T) {
+	errs := arbiter.ValidateAll(151, rule.Min[int](0), rule.Max[int](100), rule.Even[int]())
+	if len(errs) != 2 {
+		t.Errorf("Expected 2 errors, got %d: %v", len(errs), errs)
+	}
+}
+
+// TestValidateAllCustomError tests ValidateAll with custom error messages.
+func TestValidateAllCustomError(t *testing.T) {
+	errs := arbiter.ValidateAll("ab", rule.Len[string](3, 10).Errf("too short"))
+	if len(errs) != 1 {
+		t.Errorf("Expected 1 error, got %d", len(errs))
+	}
+	if errs[0].Error() != "too short" {
+		t.Errorf("Expected 'too short', got '%s'", errs[0].Error())
+	}
+}
+
+// TestValidateAllSlice tests ValidateAll with slice validation.
+func TestValidateAllSlice(t *testing.T) {
+	// Valid slice
+	errs := arbiter.ValidateAll([]int{1, 2, 3}, rule.Len[[]int](2, 5))
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors for valid slice, got %d", len(errs))
+	}
+
+	// Empty slice
+	errs = arbiter.ValidateAll([]int{}, rule.Len[[]int](2, 5))
+	if len(errs) != 1 {
+		t.Errorf("Expected 1 error for empty slice, got %d", len(errs))
+	}
+}
+
+// TestValidateAllVsValidate compares ValidateAll and Validate behavior.
+func TestValidateAllVsValidate(t *testing.T) {
+	// Validate stops at first error
+	err := arbiter.Validate(151, rule.Min[int](0), rule.Max[int](100), rule.Even[int]())
+	if err == nil {
+		t.Error("Expected error from Validate")
+	}
+
+	// ValidateAll collects all errors
+	errs := arbiter.ValidateAll(151, rule.Min[int](0), rule.Max[int](100), rule.Even[int]())
+	if len(errs) != 2 {
+		t.Errorf("Expected 2 errors from ValidateAll, got %d: %v", len(errs), errs)
+	}
+}
+
 // TestValidateStruct tests the ValidateStruct function with various structs and field rules.
 // It verifies that the function correctly validates struct fields.
 func TestValidateStruct(t *testing.T) {

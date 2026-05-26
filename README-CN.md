@@ -91,8 +91,8 @@ err := Validate("hello",
     // ...
 )
 
-// ValidateWithErrs 收集所有验证错误
-err := ValidateWithErrs("hello",
+// ValidateAll 收集所有验证错误
+err := ValidateAll("hello",
     rule.Required[string]().Errf("不能为空")
     rule.Length(3, 10).Errf("格式不正确"),
 )
@@ -183,7 +183,7 @@ if err != nil {
 
 ```go
 // 收集所有验证错误
-errs := ValidateWithErrs(value,
+errs := ValidateAll(value,
     rule1,
     rule2,
     rule3,

@@ -90,8 +90,8 @@ err := Validate("hello",
     rule.Length[string](3, 10).Errf("Invalid string"),
 )
 
-// ValidateWithErrs collects all validation errors
-err := ValidateWithErrs("hello",
+// ValidateAll collects all validation errors
+err := ValidateAll("hello",
     rule.Required[string]().Errf("required")
     rule.Length(3, 10).Errf("invalid string"),
 )
@@ -179,7 +179,7 @@ if err != nil {
 
 ```go
 // Collect all validation errors
-errs := ValidateWithErrs(value,
+errs := ValidateAll(value,
     rule1,
     rule2,
     rule3,
