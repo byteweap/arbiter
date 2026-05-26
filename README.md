@@ -8,7 +8,6 @@
 [![CI](https://github.com/byteweap/arbiter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/byteweap/arbiter/actions)
 [![codecov](https://codecov.io/gh/byteweap/arbiter/branch/master/graph/badge.svg)](https://codecov.io/gh/byteweap/arbiter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/byteweap/arbiter)](https://goreportcard.com/report/github.com/byteweap/arbiter)
-[![GoDoc](https://pkg.go.dev/badge/github.com/byteweap/arbiter)](https://pkg.go.dev/github.com/byteweap/arbiter)
 [![Release](https://img.shields.io/github/v/release/byteweap/arbiter)](https://github.com/byteweap/arbiter/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
