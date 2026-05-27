@@ -139,8 +139,8 @@ func Field[T any](field *T, rules ...rule.Rule[T]) *FieldRule[T] {
 //	    nameRule, priceRule,
 //	)
 func (f *FieldRule[T]) validate() error {
-	for _, rule := range f.rules {
-		if err := rule.Validate(*f.field); err != nil {
+	for _, r := range f.rules {
+		if err := r.Validate(*f.field); err != nil {
 			return err
 		}
 	}
