@@ -146,3 +146,85 @@ func (f *FieldRule[T]) validate() error {
 	}
 	return nil
 }
+
+// NestedFieldRule validates a nested struct field by applying a list of sub-field rules.
+type NestedFieldRule struct {
+	fields []IFieldRule
+}
+
+// NestedField creates a validation rule for a nested struct field.
+// The field parameter is a pointer to the nested struct.
+// The sub-fields parameter is a list of field rules to apply to the nested struct.
+//
+// Example:
+//
+//	type Address struct {
+//	    City   string
+//	    Street string
+//	}
+//	type User struct {
+//	    Name    string
+//	    Address Address
+//	}
+//
+//	err := arbiter.ValidateStruct(user, "User cannot be nil",
+//	    arbiter.Field(&user.Name, rule.Required[string]()),
+//	    arbiter.NestedField(&user.Address,
+//	        arbiter.Field(&user.Address.City, rule.Required[string]()),
+//	        arbiter.Field(&user.Address.Street, rule.Len[string](1, 100)),
+//	    ),
+//	)
+func NestedField(_ any, fields ...IFieldRule) *NestedFieldRule {
+	return &NestedFieldRule{fields: fields}
+}
+
+// validate applies all sub-field rules to the nested struct.
+// Returns nil if all rules pass, or the first error encountered.
+func (n *NestedFieldRule) validate() error {
+	for _, field := range n.fields {
+		if err := field.validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// SliceFieldRule validates each element in a slice by applying rules generated from a callback.
+type SliceFieldRule[T any] struct {
+	field *[]T
+	fn    func(*T) IFieldRule
+}
+
+// SliceField creates a validation rule for a slice field.
+// The field parameter is a pointer to the slice.
+// The fn parameter is a callback that receives a pointer to each element and returns validation rules.
+//
+// Example:
+//
+//	type User struct {
+//	    Tags []string
+//	}
+//
+//	err := arbiter.ValidateStruct(user, "User cannot be nil",
+//	    arbiter.SliceField(&user.Tags, func(tag *string) arbiter.IFieldRule {
+//	        return arbiter.Field(tag, rule.Len[string](1, 20))
+//	    }),
+//	)
+func SliceField[T any](field *[]T, fn func(*T) IFieldRule) *SliceFieldRule[T] {
+	return &SliceFieldRule[T]{field: field, fn: fn}
+}
+
+// validate iterates over each element in the slice and applies the rules from the callback.
+// Returns nil if all elements pass, or the first error encountered.
+func (s *SliceFieldRule[T]) validate() error {
+	if s.fn == nil || s.field == nil {
+		return nil
+	}
+	for i := range *s.field {
+		f := s.fn(&(*s.field)[i])
+		if err := f.validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
