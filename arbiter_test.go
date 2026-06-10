@@ -173,7 +173,8 @@ func TestValidateStruct(t *testing.T) {
 			Password: "StrongP@ssw0rd",
 		}
 
-		err := arbiter.ValidateStruct(person, "Person cannot be nil",
+		err := arbiter.ValidateStruct(
+			person, "Person cannot be nil",
 			arbiter.Field(&person.Name, rule.HalfWidthOnly()),
 			arbiter.Field(&person.Age, rule.Min[int](0), rule.Max[int](120)),
 			arbiter.Field(&person.Website, rule.Domain()),
@@ -201,7 +202,8 @@ func TestValidateStruct(t *testing.T) {
 			Password: "StrongP@ssw0rd",
 		}
 
-		err := arbiter.ValidateStruct(person, "Person cannot be nil",
+		err := arbiter.ValidateStruct(
+			person, "Person cannot be nil",
 			arbiter.Field(&person.Name, rule.HalfWidthOnly()),
 		)
 		if err == nil {
@@ -218,7 +220,8 @@ func TestValidateStruct(t *testing.T) {
 			Password: "StrongP@ssw0rd",
 		}
 
-		err := arbiter.ValidateStruct(person, "Person cannot be nil",
+		err := arbiter.ValidateStruct(
+			person, "Person cannot be nil",
 			arbiter.Field(&person.Name, rule.HalfWidthOnly()),
 			arbiter.Field(&person.Age, rule.Min[int](0), rule.Max[int](120)),
 			arbiter.Field(&person.Website, rule.Domain()),

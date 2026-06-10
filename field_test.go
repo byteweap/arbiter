@@ -26,42 +26,48 @@ func TestFieldValid(t *testing.T) {
 		Chinese:  "你好世界",
 	}
 
-	err := arbiter.ValidateStruct(user, "User cannot be nil",
+	err := arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid username, got %v", err)
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Age, rule.Min[int](0), rule.Max[int](120)),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid age, got %v", err)
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Website, rule.Domain()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid website, got %v", err)
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Password, rule.PasswordStrength()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid password, got %v", err)
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Chinese, rule.ChineseOnly()),
 	)
 	if err != nil {
 		t.Errorf("Expected no error for valid Chinese text, got %v", err)
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 		arbiter.Field(&user.Age, rule.Min[int](0), rule.Max[int](120)),
 		arbiter.Field(&user.Website, rule.Domain()),
@@ -82,42 +88,48 @@ func TestFieldInvalid(t *testing.T) {
 		Chinese:  "Hello",
 	}
 
-	err := arbiter.ValidateStruct(user, "User cannot be nil",
+	err := arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 	)
 	if err == nil {
 		t.Error("Expected error for full-width username, got nil")
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Age, rule.Min[int](0), rule.Max[int](120)),
 	)
 	if err == nil {
 		t.Error("Expected error for negative age, got nil")
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Website, rule.Domain()),
 	)
 	if err == nil {
 		t.Error("Expected error for invalid website domain, got nil")
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Password, rule.PasswordStrength()),
 	)
 	if err == nil {
 		t.Error("Expected error for weak password, got nil")
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Chinese, rule.ChineseOnly()),
 	)
 	if err == nil {
 		t.Error("Expected error for non-Chinese text, got nil")
 	}
 
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
 		arbiter.Field(&user.Username, rule.HalfWidthOnly()),
 		arbiter.Field(&user.Age, rule.Min(0), rule.Max(120)),
 		arbiter.Field(&user.Website, rule.Domain()),
@@ -141,8 +153,10 @@ func TestFieldMultipleRules(t *testing.T) {
 		Username: "johndoe",
 	}
 
-	err := arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Username,
+	err := arbiter.ValidateStruct(
+		user, "User cannot be nil",
+		arbiter.Field(
+			&user.Username,
 			rule.HalfWidthOnly(),
 			rule.LowerCaseOnly(),
 		),
@@ -152,8 +166,10 @@ func TestFieldMultipleRules(t *testing.T) {
 	}
 
 	user.Username = "JOHN123"
-	err = arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Username,
+	err = arbiter.ValidateStruct(
+		user, "User cannot be nil",
+		arbiter.Field(
+			&user.Username,
 			rule.HalfWidthOnly(),
 			rule.LowerCaseOnly(),
 		),
@@ -168,8 +184,10 @@ func TestFieldCustomError(t *testing.T) {
 		Age: -1,
 	}
 
-	err := arbiter.ValidateStruct(user, "User cannot be nil",
-		arbiter.Field(&user.Age,
+	err := arbiter.ValidateStruct(
+		user, "User cannot be nil",
+		arbiter.Field(
+			&user.Age,
 			rule.Min[int](0).Errf("Age cannot be negative"),
 		),
 	)

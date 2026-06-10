@@ -1,35 +1,51 @@
+version: "2"
 run:
-  timeout: 5m
-  go: '1.23'
-
+  go: "1.23"
 linters:
   enable:
-    - govet
-    - errcheck
-    - staticcheck
-    - gosimple
-    - ineffassign
-    - unused
-    - gofumpt
-    - goimports
-    - misspell
-    - whitespace
-    - gocyclo
-    - gocognit
     - exhaustive
+    - gocognit
+    - gocyclo
+    - misspell
     - prealloc
     - thelper
-
-linters-settings:
-  gofumpt:
-    extra-rules: true
-  gocyclo:
-    min-complexity: 50
-  gocognit:
-    min-complexity: 20
-  exhaustive:
-    default-signifies-exhaustive: true
-  misspell:
-    locale: US
-  goimports:
-    local-prefixes: github.com/byteweap/arbiter
+    - whitespace
+  settings:
+    govet:
+      disable:
+        - inline
+    exhaustive:
+      default-signifies-exhaustive: true
+    gocognit:
+      min-complexity: 20
+    gocyclo:
+      min-complexity: 50
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/byteweap/arbiter
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
