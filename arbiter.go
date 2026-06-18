@@ -16,8 +16,8 @@ import (
 //
 //	// Validate a string with multiple rules
 //	err := Validate("hello",
-//	    rule.Length(3, 10),           // length between 3 and 10
-//	    rule.String().Errf("Invalid"), // custom error message
+//	    rule.Len[string](3, 10), // length between 3 and 10
+//	    rule.Required[string](), // must not be empty
 //	)
 //
 //	// Validate a number with multiple rules
@@ -29,8 +29,8 @@ import (
 //
 //	// Validate a slice with multiple rules
 //	err := Validate([]int{1, 2, 3},
-//	    rule.Length(1, 5),            // length between 1 and 5
-//	    rule.NonZero(),               // must not be empty
+//	    rule.Len[[]int](1, 5), // length between 1 and 5
+//	    rule.NonZero[[]int](), // must not be empty
 //	)
 func Validate[T any](value T, rules ...rule.Rule[T]) error {
 	for _, r := range rules {
@@ -47,8 +47,8 @@ func Validate[T any](value T, rules ...rule.Rule[T]) error {
 // Example:
 //
 //	errs := ValidateAll("hello",
-//	    rule.Length(3, 10),           // length between 3 and 10
-//	    rule.String().Errf("Invalid"), // custom error message
+//	    rule.Len[string](3, 10), // length between 3 and 10
+//	    rule.Required[string](), // must not be empty
 //	)
 func ValidateAll[T any](value T, rules ...rule.Rule[T]) []error {
 	var errs []error
@@ -80,17 +80,17 @@ func ValidateAll[T any](value T, rules ...rule.Rule[T]) []error {
 //	}
 //
 //	err := ValidateStruct(person, "Person cannot be nil",
-//	    rule.Field("Name", person.Name,
-//	        rule.Length(2, 50),
-//	        rule.String().Errf("Name is required"),
+//	    Field(&person.Name,
+//	        rule.Len[string](2, 50),
+//	        rule.Required[string]().Errf("Name is required"),
 //	    ),
-//	    rule.Field("Age", person.Age,
+//	    Field(&person.Age,
 //	        rule.Min(0),
 //	        rule.Max(120),
 //	    ),
-//	    rule.Field("Email", person.Email,
-//	        rule.Email(),
-//	        rule.String().Errf("Invalid email"),
+//	    Field(&person.Email,
+//	        rule.Required[string](),
+//	        rule.IsEmail().Errf("Invalid email"),
 //	    ),
 //	)
 func ValidateStruct(value any, nilErr string, fields ...IFieldRule) error {

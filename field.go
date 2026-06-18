@@ -46,8 +46,8 @@ type IFieldRule interface {
 //
 //	// Create field rules
 //	nameRule := Field(&person.Name,
-//	    rule.Length(2, 50),
-//	    rule.String().Errf("Name is required"),
+//	    rule.Len[string](2, 50),
+//	    rule.Required[string]().Errf("Name is required"),
 //	)
 //
 //	ageRule := Field(&person.Age,
@@ -56,8 +56,8 @@ type IFieldRule interface {
 //	)
 //
 //	emailRule := Field(&person.Email,
-//	    rule.Email(),
-//	    rule.String().Errf("Invalid email"),
+//	    rule.Required[string](),
+//	    rule.IsEmail().Errf("Invalid email"),
 //	)
 //
 //	// Use with ValidateStruct
@@ -87,13 +87,13 @@ type FieldRule[T any] struct {
 //
 //	// Create field rules
 //	usernameRule := Field(&user.Username,
-//	    rule.Length(3, 20),
-//	    rule.String().Errf("Username is required"),
+//	    rule.Len[string](3, 20),
+//	    rule.Required[string]().Errf("Username is required"),
 //	)
 //
 //	passwordRule := Field(&user.Password,
-//	    rule.Length(8, 50),
-//	    rule.String().Errf("Password is required"),
+//	    rule.Len[string](8, 50),
+//	    rule.Required[string]().Errf("Password is required"),
 //	)
 //
 //	// Use with ValidateStruct
@@ -121,8 +121,8 @@ func Field[T any](field *T, rules ...rule.Rule[T]) *FieldRule[T] {
 //
 //	// Create field rules
 //	nameRule := Field(&product.Name,
-//	    rule.Length(1, 100),
-//	    rule.String().Errf("Name is required"),
+//	    rule.Len[string](1, 100),
+//	    rule.Required[string]().Errf("Name is required"),
 //	)
 //
 //	priceRule := Field(&product.Price,

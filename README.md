@@ -29,6 +29,7 @@ Arbiter is a comprehensive data validation framework written in Go that provides
 - Custom error messages
 - Conditional validation
 - Dependency validation
+- MIT licensed and suitable for commercial use
 
 ## Installation
 
@@ -61,17 +62,17 @@ func main() {
     }
 
     err := arbiter.ValidateStruct(person, "Person cannot be nil",
-        rule.Field(&person.Name,
-            rule.Length[string](2, 50).Errf("..."),
-            rule.Required[string]().Errf("..."),
+        arbiter.Field(&person.Name,
+            rule.Len[string](2, 50).Errf("name must be 2-50 characters"),
+            rule.Required[string]().Errf("name is required"),
         ),
-        rule.Field(&person.Age,
+        arbiter.Field(&person.Age,
             rule.Min(0),
             rule.Max(120),
         ),
-        rule.Field(&person.Email,
+        arbiter.Field(&person.Email,
             rule.Required[string]().Errf("required"),
-            rule.IsEmail().Errf("validate failed"),
+            rule.IsEmail().Errf("invalid email"),
         ),
     )
 
@@ -89,20 +90,20 @@ The main validation functions:
 
 ```go
 // Validate applies multiple rules to a single value
-err := Validate("hello",
-    rule.Length[string](3, 10).Errf("Invalid string"),
+err := arbiter.Validate("hello",
+    rule.Len[string](3, 10).Errf("Invalid string"),
 )
 
 // ValidateAll collects all validation errors
-err := ValidateAll("hello",
-    rule.Required[string]().Errf("required")
-    rule.Length(3, 10).Errf("invalid string"),
+errs := arbiter.ValidateAll("hello",
+    rule.Required[string]().Errf("required"),
+    rule.Len[string](3, 10).Errf("invalid string"),
 )
 
 // ValidateStruct validates a struct and its fields
-err := ValidateStruct(person, "Person cannot be nil",
-    rule.Field(&person.Name, ...),
-    rule.Field(&person.Age, ...),
+err := arbiter.ValidateStruct(person, "Person cannot be nil",
+    arbiter.Field(&person.Name, rule.Required[string]()),
+    arbiter.Field(&person.Age, rule.Min(0)),
 )
 ```
 
@@ -112,8 +113,8 @@ For validating struct fields:
 
 ```go
 // Create a field validation rule
-nameRule := rule.Field(&person.Name,
-    rule.Length[string](2, 50).Errf("Name is required"),
+nameRule := arbiter.Field(&person.Name,
+    rule.Len[string](2, 50).Errf("Name must be 2-50 characters"),
 )
 ```
 
@@ -163,6 +164,14 @@ nameRule := rule.Field(&person.Name,
 - `IsPhone`: phone number validation
 - `Regex`: custom regex validation
 - ...
+
+### Security-Oriented Rules
+- `PasswordStrength`: password strength validation
+- `PasswordComplex`: password complexity validation
+- `XSS`: heuristic checks for common XSS patterns
+- `SQLInjection`: heuristic checks for common SQL injection patterns
+
+`XSS` and `SQLInjection` are input validation helpers, not security boundaries. They do not replace HTML escaping, content sanitization, Content Security Policy, parameterized SQL queries, least-privilege database access, or other application security controls.
   
 ## Best Practices
 
@@ -170,7 +179,7 @@ nameRule := rule.Field(&person.Name,
 
 ```go
 // Stop at first error
-err := Validate(value,
+err := arbiter.Validate(value,
     rule1,
     rule2,
     rule3,
@@ -182,12 +191,12 @@ if err != nil {
 
 ```go
 // Collect all validation errors
-errs := ValidateAll(value,
+errs := arbiter.ValidateAll(value,
     rule1,
     rule2,
     rule3,
 )
-if len(errs) > 0  {
+if len(errs) > 0 {
     // Handle multiple errors
 }
 ```
@@ -202,34 +211,33 @@ type User struct {
 }
 
 func (u *User) Validate() error {
-    return ValidateStruct(user, "User cannot be nil",
-        rule.Field(&user.Username,
-            rule.Length[string](3, 20).Errf("Username is required"),
+    return arbiter.ValidateStruct(u, "User cannot be nil",
+        arbiter.Field(&u.Username,
+            rule.Len[string](3, 20).Errf("Username must be 3-20 characters"),
+            rule.Required[string]().Errf("Username is required"),
         ),
-        rule.Field(&user.Password,
-            rule.Length[string](8, 50),
+        arbiter.Field(&u.Password,
+            rule.Len[string](8, 50),
             rule.SpecialChars(true).Errf("Password must contain special characters"),
         ),
-        rule.Field(&user.Email,
+        arbiter.Field(&u.Email,
             rule.IsEmail().Errf("Invalid email"),
         ),
     )
 }
-
-
 ```
 
 ### 3. Rule Composition
 
 ```go
 // Combine rules with AND
-rule := rule.And(
+stringRule := rule.And[string](
     rule.Required[string]().Errf("required"),
-    rule.Length(3, 10).Errf("Invalid string"),
+    rule.Len[string](3, 10).Errf("Invalid string"),
 )
 
 // Combine rules with OR
-rule := rule.Or(
+contactRule := rule.Or[string](
     rule.IsEmail(),
     rule.URL(),
 )
@@ -251,17 +259,25 @@ func (r *CustomRule) Validate(value string) error {
 }
 
 // Use the custom rule
-rule := &CustomRule{err: errors.New("custom error")}
-err := Validate("", rule)
+customRule := &CustomRule{err: errors.New("custom error")}
+err := arbiter.Validate("", customRule)
 ```
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+For security issues, do not open a public issue. Please follow [SECURITY.md](SECURITY.md).
+
+## Stability and Compatibility
+
+Arbiter follows Semantic Versioning for public releases:
+
+- Patch releases fix bugs and documentation without breaking public APIs.
+- Minor releases may add new rules or capabilities while keeping existing public APIs compatible.
+- Major releases may include breaking changes and will document migration notes in [CHANGELOG.md](CHANGELOG.md).
+
+The public compatibility surface includes exported packages, types, functions, methods, errors, and documented behavior in `github.com/byteweap/arbiter` and `github.com/byteweap/arbiter/rule`.
 
 ## Testing
 
@@ -283,8 +299,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Version History
 
-- v0.1.0 (2024-03-13): Initial release with core validation rules and struct validation 
-
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## Why Arbiter?
 

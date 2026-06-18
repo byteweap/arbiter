@@ -29,6 +29,7 @@ Arbiter 是一个 Go 的全面的数据验证框架，提供丰富的验证规�
 - 自定义错误消息
 - 条件验证
 - 依赖验证
+- MIT 许可证，适合商业项目使用
 
 ## 安装
 
@@ -61,16 +62,16 @@ func main() {
     }
 
     err := arbiter.ValidateStruct(person, "Person 不能为空",
-        rule.Field(&person.Name,
-            rule.Length[string](2, 50).Errf("姓名长度必须在2-50之间"),
+        arbiter.Field(&person.Name,
+            rule.Len[string](2, 50).Errf("姓名长度必须在2-50之间"),
             rule.Required[string]().Errf("姓名不能为空"),
         ),
-        rule.Field(&person.Age,
+        arbiter.Field(&person.Age,
             rule.Min(0),
             rule.Max(120),
         ),
-        rule.Field(&person.Email,
-            rule.Required[string]().Errf("邮箱格式不正确")
+        arbiter.Field(&person.Email,
+            rule.Required[string]().Errf("邮箱不能为空"),
             rule.IsEmail().Errf("邮箱格式错误"),
         ),
     )
@@ -89,21 +90,21 @@ func main() {
 
 ```go
 // Validate 对单个值应用多个规则
-err := Validate("hello",
-    rule.Length[string](3, 10).Errf("字符串格式不正确"),
+err := arbiter.Validate("hello",
+    rule.Len[string](3, 10).Errf("字符串格式不正确"),
     // ...
 )
 
 // ValidateAll 收集所有验证错误
-err := ValidateAll("hello",
-    rule.Required[string]().Errf("不能为空")
-    rule.Length(3, 10).Errf("格式不正确"),
+errs := arbiter.ValidateAll("hello",
+    rule.Required[string]().Errf("不能为空"),
+    rule.Len[string](3, 10).Errf("格式不正确"),
 )
 
 // ValidateStruct 验证结构体及其字段
-err := ValidateStruct(person, "Person 不能为空",
-    rule.Field(&person.Name, ...),
-    rule.Field(&person.Age, ...),
+err := arbiter.ValidateStruct(person, "Person 不能为空",
+    arbiter.Field(&person.Name, rule.Required[string]()),
+    arbiter.Field(&person.Age, rule.Min(0)),
 )
 ```
 
@@ -113,9 +114,8 @@ err := ValidateStruct(person, "Person 不能为空",
 
 ```go
 // 创建字段验证规则
-nameRule := rule.Field(&person.Name,
-    rule.Length(2, 50),
-    rule.String().Errf("姓名不能为空"),
+nameRule := arbiter.Field(&person.Name,
+    rule.Len[string](2, 50).Errf("姓名长度必须在2-50之间"),
 )
 ```
 
@@ -168,13 +168,21 @@ nameRule := rule.Field(&person.Name,
 - `Regex`: 自定义正则表达式验证
 - ...
 
+#### 安全相关规则
+- `PasswordStrength`: 密码强度验证
+- `PasswordComplex`: 密码复杂度验证
+- `XSS`: 常见 XSS 模式的启发式检查
+- `SQLInjection`: 常见 SQL 注入模式的启发式检查
+
+`XSS` 和 `SQLInjection` 是输入校验辅助规则，不是完整的安全边界。它们不能替代 HTML 转义、内容清洗、Content Security Policy、参数化 SQL 查询、数据库最小权限等应用安全措施。
+
 ## 最佳实践
 
 ### 1. 错误处理
 
 ```go
 // 收集第一个错误
-err := Validate(value,
+err := arbiter.Validate(value,
     rule1,
     rule2,
     rule3,
@@ -186,7 +194,7 @@ if err != nil {
 
 ```go
 // 收集所有验证错误
-errs := ValidateAll(value,
+errs := arbiter.ValidateAll(value,
     rule1,
     rule2,
     rule3,
@@ -206,37 +214,33 @@ type User struct {
 }
 
 func (u *User) Validate() error {
-   return ValidateStruct(user, "User 不能为空",
-        rule.Field(&user.Username,
-            rule.Length(3, 20).Errf("用户名不符合规则"),
-            // ...
+   return arbiter.ValidateStruct(u, "User 不能为空",
+        arbiter.Field(&u.Username,
+            rule.Len[string](3, 20).Errf("用户名长度必须在3-20之间"),
+            rule.Required[string]().Errf("用户名不能为空"),
         ),
-        rule.Field(&user.Password,
-            rule.Length(8, 50),
+        arbiter.Field(&u.Password,
+            rule.Len[string](8, 50),
             rule.SpecialChars(true).Errf("密码必须包含特殊字符"),
-            // ...
         ),
-        rule.Field(&user.Email,
+        arbiter.Field(&u.Email,
             rule.IsEmail().Errf("邮箱格式不正确"),
-            // ...
         ),
-        // ...
     )
 }
-
-
 ```
 
 ### 3. 规则组合
 
 ```go
 // 使用 AND 组合规则
-rule := rule.And(
-    rule.Length(3, 10).Errf("字符串格式不正确"),
+stringRule := rule.And[string](
+    rule.Required[string]().Errf("不能为空"),
+    rule.Len[string](3, 10).Errf("字符串格式不正确"),
 )
 
 // 使用 OR 组合规则
-rule := rule.Or(
+contactRule := rule.Or[string](
     rule.IsEmail(),
     rule.URL(),
 )
@@ -258,17 +262,25 @@ func (r *CustomRule) Validate(value string) error {
 }
 
 // 使用自定义规则
-rule := &CustomRule{err: errors.New("自定义错误")}
-err := Validate("", rule)
+customRule := &CustomRule{err: errors.New("自定义错误")}
+err := arbiter.Validate("", customRule)
 ```
 
 ## 贡献指南
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m '添加一些很棒的特性'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 提交 Pull Request
+欢迎贡献。提交 Pull Request 前请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+如果你发现安全问题，请不要创建公开 issue，请按照 [SECURITY.md](SECURITY.md) 中的流程报告。
+
+## 稳定性与兼容性
+
+Arbiter 的公开版本遵循语义化版本：
+
+- 补丁版本用于修复 bug 和文档问题，不破坏公开 API。
+- 次要版本可以新增规则或能力，同时保持已有公开 API 兼容。
+- 主要版本可能包含破坏性变更，并会在 [CHANGELOG.md](CHANGELOG.md) 中提供迁移说明。
+
+公开兼容性范围包括 `github.com/byteweap/arbiter` 和 `github.com/byteweap/arbiter/rule` 中导出的包、类型、函数、方法、错误值以及文档化行为。
 
 ## 测试
 
@@ -290,7 +302,7 @@ go tool cover -html=coverage.out
 
 ## 版本历史
 
-- v0.1.0 (2024-03-13): 首个版本，包含核心验证规则和结构体验证
+详见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 为什么选择 Arbiter？
 

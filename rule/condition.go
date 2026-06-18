@@ -18,7 +18,7 @@ var (
 //
 // Example:
 //
-//	rule := And(Length(5), Contains("a"))
+//	rule := And[string](Len[string](5, 10), Contains("a"))
 //	err := rule.Validate("abcde")  // returns nil
 //	err = rule.Validate("bcde")   // returns ErrCondition
 type ConditionRule[T any] struct {
@@ -32,7 +32,7 @@ type ConditionRule[T any] struct {
 //
 // Example:
 //
-//	rule := And(Length(5), Contains("a"))
+//	rule := And[string](Len[string](5, 10), Contains("a"))
 //	err := rule.Validate("abcde")  // returns nil
 func And[T any](rules ...Rule[T]) *ConditionRule[T] {
 	return &ConditionRule[T]{
@@ -47,7 +47,7 @@ func And[T any](rules ...Rule[T]) *ConditionRule[T] {
 //
 // Example:
 //
-//	rule := Or(Length(5), Contains("a"))
+//	rule := Or[string](Len[string](5, 10), Contains("a"))
 //	err := rule.Validate("bcde")  // returns nil
 func Or[T any](rules ...Rule[T]) *ConditionRule[T] {
 	return &ConditionRule[T]{
@@ -88,7 +88,7 @@ func (r *ConditionRule[T]) Validate(value T) error {
 //
 // Example:
 //
-//	rule := And(Length(5), Contains("a")).Errf("Invalid value")
+//	rule := And[string](Len[string](5, 10), Contains("a")).Errf("Invalid value")
 func (r *ConditionRule[T]) Errf(format string, args ...any) *ConditionRule[T] {
 	if format != "" {
 		r.e = fmt.Errorf(format, args...)

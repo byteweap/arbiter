@@ -1,5 +1,11 @@
 // Package rule provides a collection of validation rules for various data types.
-// This file contains security-related validation rules for passwords, XSS protection, and SQL injection prevention.
+// This file contains security-oriented validation rules for passwords, XSS pattern checks,
+// and SQL injection pattern checks.
+//
+// The XSS and SQLInjection rules are heuristic input validation helpers. They are not
+// complete security controls and must not replace output escaping, sanitization,
+// Content Security Policy, parameterized SQL queries, least-privilege database access,
+// or other application security measures.
 package rule
 
 import (
@@ -58,11 +64,11 @@ var (
 	ErrPasswordComplex = errors.New("password does not meet complexity requirements")
 
 	// ErrXSS is returned when input contains potential XSS (Cross-Site Scripting) attack patterns.
-	// This helps prevent malicious script injection in web applications.
+	// This is a heuristic signal and is not a substitute for context-aware escaping or sanitization.
 	ErrXSS = errors.New("input contains potential XSS attack")
 
 	// ErrSQLInjection is returned when input contains potential SQL injection attack patterns.
-	// This helps prevent malicious SQL query manipulation in database operations.
+	// This is a heuristic signal and is not a substitute for parameterized queries.
 	ErrSQLInjection = errors.New("input contains potential SQL injection")
 )
 
@@ -422,8 +428,8 @@ func (r *PasswordComplexRule) Errf(format string, args ...any) *PasswordComplexR
 	return r
 }
 
-// XSSRule validates that input does not contain potential XSS (Cross-Site Scripting) attack patterns.
-// This helps prevent malicious script injection in web applications.
+// XSSRule validates that input does not contain common XSS (Cross-Site Scripting) attack patterns.
+// It is a heuristic input validation helper, not a complete XSS defense.
 //
 // Example:
 //
@@ -434,8 +440,9 @@ type XSSRule struct {
 	e error
 }
 
-// XSS creates a new XSS protection validation rule.
-// The rule checks for common XSS attack patterns in the input.
+// XSS creates a new XSS pattern validation rule.
+// The rule checks for common XSS attack patterns in the input. It must be combined with
+// context-aware output escaping, sanitization, and other application security controls.
 //
 // Example:
 //
@@ -494,8 +501,8 @@ func (r *XSSRule) Errf(format string, args ...any) *XSSRule {
 	return r
 }
 
-// SQLInjectionRule validates that input does not contain potential SQL injection attack patterns.
-// This helps prevent malicious SQL query manipulation in database operations.
+// SQLInjectionRule validates that input does not contain common SQL injection attack patterns.
+// It is a heuristic input validation helper, not a complete SQL injection defense.
 //
 // Example:
 //
@@ -506,8 +513,9 @@ type SQLInjectionRule struct {
 	e error
 }
 
-// SQLInjection creates a new SQL injection protection validation rule.
-// The rule checks for common SQL injection attack patterns in the input.
+// SQLInjection creates a new SQL injection pattern validation rule.
+// The rule checks for common SQL injection attack patterns in the input. It must be combined
+// with parameterized queries and least-privilege database access.
 //
 // Example:
 //
